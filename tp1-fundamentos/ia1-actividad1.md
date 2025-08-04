@@ -1,31 +1,43 @@
-Actividad Preliminar 1
+# Actividad Preliminar 1
 
-Buscar 2 ejemplos de aplicaciones de inteligencia artificial. (Algo distinto y único en lo posible, es decir no copilot, no Dall-E, no GPT-X)
+## Ejemplos de aplicaciones de inteligencia artificial
 
-Ejemplo 1: Blue River Technology – “See & Spray”
-Descripción: Es una tecnología desarrollada por la empresa Blue River Technology (subsidiaria de John Deere) que utiliza visión computacional y aprendizaje automático para identificar y aplicar herbicidas únicamente sobre las malas hierbas, sin afectar los cultivos.
+### Ejemplo 1: Blue River Technology – *“See & Spray”*
 
-Aplicación: Agricultura de precisión.
+- **Descripción**:  
+  Tecnología desarrollada por Blue River Technology (subsidiaria de John Deere) que utiliza visión computacional y aprendizaje automático para identificar y aplicar herbicidas únicamente sobre las malas hierbas, sin afectar los cultivos.
 
-Lo distintivo: Ahorra hasta un 90% en el uso de agroquímicos, reduciendo el impacto ambiental y mejorando la eficiencia agrícola mediante una IA especializada en detección de plantas en tiempo real.
+- **Aplicación**:  
+  Agricultura de precisión.
 
+- **Lo distintivo**:  
+  Ahorra hasta un 90% en el uso de agroquímicos, reduciendo el impacto ambiental y mejorando la eficiencia agrícola mediante una IA especializada en detección de plantas en tiempo real.
 
-Ejemplo 2: AIVA (Artificial Intelligence Virtual Artist)
+---
 
-Descripción: AIVA es una IA diseñada para componer música original. Aprende a partir de partituras de compositores clásicos y puede generar piezas nuevas en distintos estilos.
+### Ejemplo 2: AIVA (*Artificial Intelligence Virtual Artist*)
 
-Aplicación: Composición musical automatizada.
+- **Descripción**:  
+  AIVA es una inteligencia artificial diseñada para componer música original. Aprende a partir de partituras de compositores clásicos y puede generar piezas nuevas en distintos estilos.
 
-Lo distintivo: No solo asiste al músico, sino que crea piezas enteramente nuevas, que incluso han sido utilizadas en cortometrajes y videojuegos.
+- **Aplicación**:  
+  Composición musical automatizada.
 
+- **Lo distintivo**:  
+  No solo asiste al músico, sino que crea piezas enteramente nuevas, que incluso han sido utilizadas en cortometrajes y videojuegos.
 
+---
 
-¿Qué se entiende por inteligencia artificial ?
-Lo que entiendo por inteligencia altificial es un sistema informatico que es capaz de imitar el comportamiento humano, puede ser el comportamiento como la forma de pensar, razonar, etc
+## Definiciones
 
-¿Qué se entiende por Inteligencia ?
-Inteligencia es la capacidad de poder entender, memorizar y resolver problemas
+### ¿Qué se entiende por *inteligencia artificial*?
 
-¿Qué se entiende por artificial ?
-Artificial es algo creado por los seres humanos, es decir algo que no es natural
+Lo que entiendo por inteligencia artificial es un sistema informático que es capaz de imitar el comportamiento humano, ya sea en su forma de pensar, razonar, tomar decisiones, entre otras capacidades.
 
+### ¿Qué se entiende por *inteligencia*?
+
+La inteligencia es la capacidad de poder entender, memorizar y resolver problemas.
+
+### ¿Qué se entiende por *artificial*?
+
+Artificial es todo aquello creado por los seres humanos, es decir, algo que no es natural.
