@@ -1,43 +1,39 @@
-# Actividad Preliminar 1
+# Trabajo práctico n°1
 
-## Ejemplos de aplicaciones de inteligencia artificial
+## 1) Para cada uno de los siguientes actividades, describa el PEAS para cada tarea y caracterizando en término de las propiedades vistas 
 
-### Ejemplo 1: Blue River Technology – *“See & Spray”*
+### a) Jugar al CS
+**Performance** →  Muertes, kills, dinero
+**Environment** → Mapas
+**Action (actuators)** → Comprar, moverse, disparar, matar, correr, agacharse, saltar
+**Sensors** →  Lo que se ve en la pantalla, lo que se escucha.
 
-- **Descripción**:  
-  Tecnología desarrollada por Blue River Technology (subsidiaria de John Deere) que utiliza visión computacional y aprendizaje automático para identificar y aplicar herbicidas únicamente sobre las malas hierbas, sin afectar los cultivos.
+### b) Explorar los océanos
+**Performance** → Porcentaje de oceano explorado
+**Environment** →  todo el oceano
+**Action (actuators)** →  Moverse, agarrar, etc
+**Sensors** →  Cámara, termometro, microfono, etc
 
-- **Aplicación**:  
-  Agricultura de precisión.
+### c) Comprar y vender tokens criptos
+**Performance** → Ganancia total, retorno de inversión (ROI), porcentaje de aciertos en operaciones.  
+**Environment** → Mercado de criptomonedas, exchanges, volatilidad del precio, tendencias globales.  
+**Action (actuators)** → Comprar, vender, mantener (HODL), colocar órdenes limit, cancelar órdenes.  
+**Sensors** → Gráficos de precios, indicadores técnicos, noticias, sentimiento del mercado.
 
-- **Lo distintivo**:  
-  Ahorra hasta un 90% en el uso de agroquímicos, reduciendo el impacto ambiental y mejorando la eficiencia agrícola mediante una IA especializada en detección de plantas en tiempo real.
+### d) Practicar tenis contra una pared
+**Performance** →  Cantidad de tiros acertados en el centro
+**Environment** → Media cancha
+**Action (actuators)** → Moverse, correr, saltar, pegar
+**Sensors** → visión del jugador, tacto del jugador y otros sentidos del jugador
 
----
+### e) Salto de altura
+**Performance** →  maximizar la medicion de la altura
+**Environment** → pista de salto
+**Action (actuators)** → Moverse, correr, saltar
+**Sensors** → visión del jugador, tacto del jugador y otros sentidos del jugador
 
-### Ejemplo 2: AIVA (*Artificial Intelligence Virtual Artist*)
-
-- **Descripción**:  
-  AIVA es una inteligencia artificial diseñada para componer música original. Aprende a partir de partituras de compositores clásicos y puede generar piezas nuevas en distintos estilos.
-
-- **Aplicación**:  
-  Composición musical automatizada.
-
-- **Lo distintivo**:  
-  No solo asiste al músico, sino que crea piezas enteramente nuevas, que incluso han sido utilizadas en cortometrajes y videojuegos.
-
----
-
-## Definiciones
-
-### ¿Qué se entiende por *inteligencia artificial*?
-
-Lo que entiendo por inteligencia artificial es un sistema informático que es capaz de imitar el comportamiento humano, ya sea en su forma de pensar, razonar, tomar decisiones, entre otras capacidades.
-
-### ¿Qué se entiende por *inteligencia*?
-
-La inteligencia es la capacidad de poder entender, memorizar y resolver problemas.
-
-### ¿Qué se entiende por *artificial*?
-
-Artificial es todo aquello creado por los seres humanos, es decir, algo que no es natural.
+### f) Pujar por un articulo en una subasta 
+**Performance** →  Precio final conseguido, si se ganó o no la subasta.
+**Environment** → Sala de subasta (física o virtual), otros postores, reglas de la subasta.
+**Action (actuators)** → Ofertar, subir oferta, retirarse.
+**Sensors** → Información sobre las pujas actuales, tiempo restante, reacciones de otros postores.
