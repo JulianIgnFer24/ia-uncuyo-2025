@@ -8,6 +8,7 @@ Se incluyen tres gráficos principales, cuyos archivos se encuentran en la carpe
 ## 1. Acciones realizadas vs Nivel de suciedad (Agente Random)
 
 Archivo: **actions_vs_dirt_random.png**
+![alt text](images/actions_vs_dirt_random.png)
 
 **Descripción:**  
 El gráfico muestra la relación entre la cantidad de acciones tomadas y el nivel de suciedad en diferentes tamaños de entorno para el agente **Random**.
@@ -22,6 +23,8 @@ El gráfico muestra la relación entre la cantidad de acciones tomadas y el nive
 
 Archivo: **actions_vs_dirt_simple_reflex.png**
 
+![alt text](images/actions_vs_dirt_simple_reflex.png)
+
 **Descripción:**  
 El gráfico muestra el comportamiento del agente **Simple Reflex** bajo las mismas condiciones.
 
@@ -34,10 +37,8 @@ El gráfico muestra el comportamiento del agente **Simple Reflex** bajo las mism
 
 ## 3. Comparación de Performance con rango de variación
 
-Archivo: **performance_lines_band.png**
 
-**Descripción:**  
-El gráfico presenta la performance promedio de ambos agentes según el nivel de suciedad, incluyendo el rango de variación observado.
+![alt text](images/performance_distribution.png) ![alt text](images/performance_by_dirt_rate.png)
 
 **Observaciones:**
 - El agente **Simple Reflex** mantiene consistentemente un rendimiento superior al agente **Random**.  
