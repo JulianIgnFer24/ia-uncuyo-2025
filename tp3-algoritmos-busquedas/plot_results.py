@@ -127,6 +127,45 @@ def bar_avg_time_by_algorithm(rows, filename):
     print(f"[OK] Guardado: {outpath}")
 
 
+def bar_avg_cost_by_algorithm(rows, filename):
+    # promedio de costo por algoritmo y escenario (solo soluciones)
+    agg = defaultdict(lambda: defaultdict(list))  # scen -> algo -> [costs]
+    for r in rows:
+        if r["actions_cost"] is None or not r["solution_found"]:
+            continue
+        agg[r["scenario"]][r["algorithm_name"]].append(r["actions_cost"])
+
+    scenarios = sorted(agg.keys())
+    if not scenarios:
+        print("[WARN] No hay datos de costo.")
+        return
+
+    ncols = len(scenarios)
+    fig, axes = plt.subplots(1, ncols, figsize=(6 * ncols, 4), sharey=True)
+    if ncols == 1:
+        axes = [axes]
+
+    for ax, scen in zip(axes, scenarios):
+        algos = sorted(agg[scen].keys())
+        if not algos:
+            continue
+        means = [sum(agg[scen][a]) / len(agg[scen][a]) for a in algos if agg[scen][a]]
+        valid_algos = [a for a in algos if agg[scen][a]]
+        if not valid_algos:
+            continue
+        ax.bar(valid_algos, means, color=plt.cm.Paired.colors)
+        ax.set_title(f"Promedio costo del plan - {scen}")
+        ax.set_ylabel("costo promedio")
+        ax.set_xticklabels(valid_algos, rotation=45, ha='right')
+        ax.grid(True, axis='y', linestyle='--', alpha=0.4)
+
+    fig.tight_layout()
+    outpath = os.path.join(OUT_DIR, filename)
+    fig.savefig(outpath, dpi=160)
+    plt.close(fig)
+    print(f"[OK] Guardado: {outpath}")
+
+
 def boxplot_metric_by_algorithm(rows, metric, title, filename, filter_found=False, ylabel=None):
     # Agrupar valores por algoritmo dentro de cada escenario
     agg = defaultdict(lambda: defaultdict(list))  # scen -> algo -> [vals]
@@ -220,6 +259,9 @@ def main():
 
     # Barras con promedios de tiempo por algoritmo y escenario
     bar_avg_time_by_algorithm(rows, filename="avg_tiempo_por_algoritmo.png")
+
+    # Barras con promedios de costo por algoritmo y escenario
+    bar_avg_cost_by_algorithm(rows, filename="avg_costo_por_algoritmo.png")
 
     # Boxplots por algoritmo en cada escenario
     boxplot_metric_by_algorithm(

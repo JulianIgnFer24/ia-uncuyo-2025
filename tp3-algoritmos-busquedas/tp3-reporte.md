@@ -36,6 +36,8 @@ Esto demuestra la superioridad de las estrategias sistemáticas y guiadas frente
 
 ![boxplot_actions_count_solo_soluciones.png](https://raw.githubusercontent.com/bucketio/img17/main/2025/10/14/1760469321075-9e665ea7-3b2c-4edb-8e30-ee649a707963.png 'boxplot_actions_count_solo_soluciones.png')
 
+![boxplot_actions_cost_solo_soluciones.png](https://raw.githubusercontent.com/bucketio/img16/main/2025/10/14/1760476624808-f5659bd7-a36b-4c7d-ac68-43db17ba5b4b.png 'boxplot_actions_cost_solo_soluciones.png')
+
 
 ## Heurística utilizada por A\*
 
