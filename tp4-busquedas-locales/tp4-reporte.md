@@ -31,23 +31,32 @@
 - Límite de estados: el mismo para todos los algoritmos (ver CSV).
 - Medidas registradas por corrida: `algorithm_name`, `env_n`, `size`, `best_solution`, `H`, `states`, `time`.
 
-## Resultados (resumen)
+## Resultados
 
-La tabla completa de corridas se encuentra en `tp4-busquedas-locales/tp4-Nreinas.csv`.
+### Para N=4
+Para instancias pequeñas, todos los algoritmos logran encontrar soluciones óptimas (H=0) con alta frecuencia.
+El tiempo de ejecución es extremadamente bajo en todos los casos, con diferencias apenas perceptibles.
+Aun así, se observa que GA y HC son los más rápidos, seguidos de SA y Random, que muestran una dispersión ligeramente mayor debido a su naturaleza estocástica.
+![box_H_N4.png](https://raw.githubusercontent.com/bucketio/img11/main/2025/10/14/1760468233020-97db5b97-5d54-40be-833e-5430e5e334d3.png 'box_H_N4.png')
+![box_time_success_N4.png](https://raw.githubusercontent.com/bucketio/img13/main/2025/10/14/1760468245711-98d7508f-15e3-4b53-bcfc-cea34a8b79b3.png 'box_time_success_N4.png')
 
-Se incluyen boxplots por tamaño y algoritmo en `tp4-busquedas-locales/images/`:
 
-- `boxplot_H_N{size}.png`: distribución de `H` final.
-- `boxplot_time_N{size}.png`: tiempos de ejecución.
+### Para N=8
+A medida que aumenta el tamaño, la diferencia entre algoritmos se hace más notoria.
+En el gráfico de tiempos, HC y SA siguen siendo los más eficientes, mientras que Random presenta una alta variabilidad y GA mantiene tiempos intermedios y estables.
+![box_H_N8.png](https://raw.githubusercontent.com/bucketio/img3/main/2025/10/14/1760468236907-f42389e7-c80c-4429-8bac-046219659cd6.png 'box_H_N8.png')
+![box_time_success_N8.png](https://raw.githubusercontent.com/bucketio/img11/main/2025/10/14/1760468247130-0ee61bcd-6baf-410a-a6c0-aeb4524bf9ee.png 'box_time_success_N8.png')
 
-Evolución de `H()` a lo largo de las iteraciones (una ejecución por algoritmo y tamaño), también en `images/`:
 
-Observaciones típicas esperadas:
+### Para N=10
 
-- Random rara vez alcanza `H=0` para N≥8 dentro de un presupuesto moderado; distribuciones de `H` altas.
-- HC es rápido, pero puede atascarse en óptimos locales/mesetas; performance sensible a la inicialización.
-- SA mejora sobre HC al escapar de óptimos locales, con más estados/tiempo; mejores tasas de éxito en N=8,10.
-- GA tiende a lograr mayores tasas de óptimo con más evaluaciones; sensible a tamaños de población y tasas de cruce/mutación.
+En los tiempos, HC y SA siguen mostrando ejecuciones rápidas y consistentes, mientras que GA presenta una mayor dispersión debido al procesamiento poblacional.
+Random no logra encontrar ninguna solución exitosa, como se indica con “0 éxitos”.
+
+![box_H_N10.png](https://raw.githubusercontent.com/bucketio/img2/main/2025/10/14/1760468242447-ef14a198-2d43-47b0-9ad9-948284cabb8d.png 'box_H_N10.png')
+![box_time_success_N10.png](https://raw.githubusercontent.com/bucketio/img12/main/2025/10/14/1760468248389-d81be1f6-1df0-473c-b375-2c953b4d3fe7.png 'box_time_success_N10.png')
+
+
 
 ## Conclusión
 
