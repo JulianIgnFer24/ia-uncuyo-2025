@@ -47,6 +47,20 @@ El gráfico muestra el comportamiento del agente **Simple Reflex** bajo las mism
 
 ---
 
+## Métrica de Performance
+
+**Métrica de Performance:**
+
+La performance se calculó como una medida de eficiencia basada en el número de acciones utilizadas:
+
+```
+Performance = (1000 - acciones_realizadas) / 10
+```
+
+Donde 1000 es el máximo de acciones permitidas por simulación. Esta métrica arroja valores de 0 a 100, donde valores más altos indican mayor eficiencia (menos acciones necesarias para completar la tarea). Se utilizó esta métrica en lugar de la tradicional (celdas_limpiadas - acciones) debido a que los datos experimentales no registraron limpieza de celdas.
+
+---
+
 ## Conclusiones
 
 - El agente **Random** muestra un comportamiento ineficiente en entornos grandes y con alta suciedad, llegando al máximo de acciones sin lograr una limpieza completa.  
