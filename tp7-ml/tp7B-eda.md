@@ -9,7 +9,7 @@ Este informe presenta un análisis exhaustivo sobre la inclinación peligrosa en
 
 ## 2. Distribución de la Clase: Inclinación Peligrosa
 
-![alt text](parte1/ej2/outputs/a_distribucion_clase.png)
+![alt text](images/a_distribucion_clase.png)
 
 ### 2.1. Resumen General
 
@@ -27,7 +27,7 @@ La baja prevalencia de inclinación peligrosa (11.2%) indica que:
 
 ## 3. Top 15 Especies con Mayor Tasa de Inclinación Peligrosa
 
-![alt text](parte1/ej2/outputs/c_especie_tasa_top.png)
+![alt text](images/c_especie_tasa_top.png)
 
 ### 3.1. Especies de Alto Riesgo
 
@@ -65,7 +65,7 @@ Las especies con mayor tasa de inclinación peligrosa son:
 
 ## 4. Tasa de Inclinación Peligrosa por Sección
 
-![alt text](parte1/ej2/outputs/b_seccion_tasa.png)
+![alt text](images/b_seccion_tasa.png)
 
 ### 4.1. Ranking de Secciones por Riesgo
 
@@ -116,7 +116,7 @@ La variabilidad entre secciones (3.0% - 15.0%) sugiere que factores locales infl
 
 ## 1. Distribución por Clase: Inclinación Peligrosa
 
-![alt text](parte1/ej3/outputs/3b_hist_circ_tronco_por_clase.png)
+![alt text](images/3b_hist_circ_tronco_por_clase.png)
 
 ### 1.1. Observaciones Principales
 
@@ -143,14 +143,14 @@ La variabilidad entre secciones (3.0% - 15.0%) sugiere que factores locales infl
 
 ### 2.1. Histograma con 40 bins
 
-![alt text](parte1/ej3/outputs/3a_hist_circ_tronco_40bins.png)
+![alt text](images/3a_hist_circ_tronco_40bins.png)
 
 - **Moda principal**: ~120 cm
 - **Distribución**: Unimodal con sesgo a la derecha
 
 ### 2.2. Histograma con 20 bins
 
-![alt text](parte1/ej3/outputs/3a_hist_circ_tronco_20bins.png)
+![alt text](images/3a_hist_circ_tronco_20bins.png)
 
 - **Pico máximo**: ~120-140 cm con ~3,800 árboles
 - **Forma**: Distribución normal sesgada a la derecha
@@ -159,7 +159,7 @@ La variabilidad entre secciones (3.0% - 15.0%) sugiere que factores locales infl
 
 ### 2.3. Histograma con 10 bins
 
-![alt text](parte1/ej3/outputs/3a_hist_circ_tronco_10bins.png)
+![alt text](images/3a_hist_circ_tronco_10bins.png)
 
 - **Máximo absoluto**: Rango 100-150 cm con ~7,200 árboles
 - **Segundo pico**: Rango 50-100 cm con ~6,500 árboles
