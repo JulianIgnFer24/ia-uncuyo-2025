@@ -29,6 +29,15 @@ El clasificador se aplicó al archivo `arbolado-mendoza-dataset-validation.csv`,
 | **Actual: NO** | 11286 (TN)        | 11382 (FP)         |
 | **Actual: YES**| 1419 (FN)         | 1442 (TP)          |
 
+### Métricas de evaluación
+
+| Métrica | Fórmula | Valor |
+|---------|---------|------:|
+| **Accuracy** | (TP + TN) / Total | 0.4987 |
+| **Precision** | TP / (TP + FP) | 0.1124 |
+| **Sensitivity (Recall)** | TP / (TP + FN) | 0.5040 |
+| **Specificity** | TN / (TN + FP) | 0.4979 |
+
 
 # Ejercicio 5 – Clasificador por clase mayoritaria
 
@@ -56,3 +65,11 @@ Clase mayoritaria: 0 (árbol no peligroso)
 | **Actual: NO** | 5665 (TN)        | 0 (FP)             |
 | **Actual: YES**| 718 (FN)         | 0 (TP)             |
 
+### Métricas de evaluación
+
+| Métrica | Fórmula | Valor |
+|---------|---------|------:|
+| **Accuracy** | (TP + TN) / Total | 0.8875 |
+| **Precision** | TP / (TP + FP) | — (indefinido: 0/0) |
+| **Sensitivity (Recall)** | TP / (TP + FN) | 0 |
+| **Specificity** | TN / (TN + FP) | 1 |
