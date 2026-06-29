@@ -1,0 +1,4 @@
+proyecto_final/experiments_qwen3.5_9B/
+__pycache__/
+*.pyc
+.venv/
