@@ -42,6 +42,7 @@ photorec.se*
 experiments*
 
 scripts/db_admin_experiment*
+!scripts/db_admin_experiments/*.png
 
 # Test scripts
 test_opencode_*.py
