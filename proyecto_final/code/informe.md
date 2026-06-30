@@ -3,7 +3,6 @@
 **Materia:** Inteligencia Artificial  
 **Facultad de Ingeniería – Universidad Nacional de Cuyo**  
 **Año:** 2025
-**Alumnos:** Julian Ignacio Fernandez, Rocio Baggio 
 
 ---
 
@@ -24,9 +23,9 @@
 
 La simulación de comportamiento humano en entornos digitales es una problemática central en múltiples áreas de la informática, especialmente en ciberseguridad. Los entornos de prueba conocidos como *cyber ranges*, infraestructuras controladas diseñadas para simular redes y sistemas reales, requieren la presencia de actividad legítima y creíble para que su utilidad sea real. Sin esta simulación, los experimentos de detección de intrusiones, análisis de tráfico de red o evaluación de sistemas de defensa carecen del contexto necesario para validarse correctamente [1].
 
-Históricamente, la generación de tráfico benigno se ha abordado mediante scripts predefinidos o mediante la intervención directa de operadores humanos. Ambos enfoques presentan limitaciones significativas: los scripts son rígidos, predecibles y no logran capturar la variabilidad natural del comportamiento humano, mientras que la operación manual no escala y está sujeta a errores de reproducibilidad. Esta rigidez hace que los sistemas de detección entrenados o evaluados sobre tráfico sintético de baja calidad presenten resultados que no se corresponden con el rendimiento real en producción [2].
+Históricamente, la generación de tráfico benigno se ha abordado mediante scripts predefinidos o mediante la intervención directa de operadores humanos. Ambos enfoques presentan limitaciones significativas: los scripts son rígidos, predecibles y no logran capturar la variabilidad natural del comportamiento humano, mientras que la operación manual no escala y está sujeta a errores de reproducibilidad. Esta rigidez hace que los sistemas de detección entrenados o evaluados sobre tráfico sintético de baja calidad presenten resultados que no se corresponden con el rendimiento real en producción.
 
-La irrupción de los Modelos de Lenguaje de Gran Escala (LLMs, por sus siglas en inglés) ha abierto una alternativa prometedora. Estos modelos, entrenados sobre vastas colecciones de texto y código, han demostrado capacidad para razonar sobre tareas complejas, generar secuencias de comandos válidos, adaptarse ante errores y operar de manera autónoma en entornos interactivos [3]. La posibilidad de equipar a un agente de software con un LLM como motor de razonamiento permite así construir un simulador de usuario que no sigue un guión fijo, sino que interpreta objetivos en lenguaje natural y decide cómo alcanzarlos mediante comandos reales ejecutados en un sistema operativo.
+La irrupción de los Modelos de Lenguaje de Gran Escala (LLMs, por sus siglas en inglés) ha abierto una alternativa prometedora. Estos modelos, entrenados sobre vastas colecciones de texto y código, han demostrado capacidad para razonar sobre tareas complejas, generar secuencias de comandos válidos, adaptarse ante errores y operar de manera autónoma en entornos interactivos [3]. La posibilidad de equipar a un agente de software con un LLM como motor de razonamiento permite así construir un simulador de usuario que no sigue un guión fijo, sino que interpreta objetivos en lenguaje natural y decide cómo alcanzarlos mediante comandos reales ejecutados en un sistema operativo [4].
 
 ### 1.2 Problema a Resolver
 
@@ -43,6 +42,10 @@ La aplicación de técnicas de inteligencia artificial, en particular agentes ba
 - **Variabilidad emergente:** El comportamiento varía de ejecución en ejecución, lo que produce patrones de tráfico más naturales y menos predecibles.
 - **Escalabilidad:** Una vez definida la arquitectura, el agente puede ser reconfigurado para distintos perfiles de usuario simplemente cambiando su instrucción de sistema (*system prompt*).
 
+### 1.4 Estructura del Trabajo
+
+El resto del trabajo se organiza de la siguiente manera. La sección 2 presenta el marco teórico, incluyendo los fundamentos de los LLMs, la arquitectura de agentes autónomos, la herramienta de código abierto OpenCode y los modelos de lenguaje utilizados. La sección 3 describe el diseño experimental: la arquitectura del sistema, el perfil del agente, las herramientas, la configuración de los experimentos, la recolección y procesamiento de datos, y la definición formal de las métricas. La sección 4 presenta y discute los resultados obtenidos a partir de las ejecuciones, analizando las tasas de éxito, la evolución temporal de los errores, la duración de las ejecuciones y el volumen de comandos por subcategoría. Finalmente, la sección 5 sintetiza las conclusiones del trabajo y plantea líneas de investigación futuras.
+
 
 ---
 
@@ -50,21 +53,21 @@ La aplicación de técnicas de inteligencia artificial, en particular agentes ba
 
 ### 2.1 Modelos de Lenguaje de Gran Escala (LLMs)
 
-Los Modelos de Lenguaje de Gran Escala son sistemas de aprendizaje automático basados en arquitecturas de tipo *Transformer* [4], entrenados sobre enormes corpus de texto con el objetivo de predecir la siguiente palabra (o *token*) en una secuencia dada. Esta tarea aparentemente simple da lugar, a escala suficiente de parámetros y datos, a capacidades emergentes sorprendentes: razonamiento lógico, generación de código, resolución de problemas matemáticos y seguimiento de instrucciones complejas [3].
+Los Modelos de Lenguaje de Gran Escala son sistemas de aprendizaje automático basados en arquitecturas de tipo *Transformer* [6], entrenados sobre enormes corpus de texto con el objetivo de predecir la siguiente palabra (o *token*) en una secuencia dada. Esta tarea aparentemente simple da lugar, a escala suficiente de parámetros y datos, a capacidades emergentes sorprendentes: razonamiento lógico, generación de código, resolución de problemas matemáticos y seguimiento de instrucciones complejas [3].
 
 El proceso de entrenamiento de un LLM moderno comprende típicamente dos grandes etapas:
 
 1. **Preentrenamiento:** El modelo aprende una representación estadística del lenguaje a partir de miles de millones de documentos de texto (páginas web, libros, repositorios de código, artículos científicos). El objetivo es minimizar la entropía cruzada sobre la predicción del siguiente token.
 
-2. **Alineamiento mediante retroalimentación humana (RLHF):** Tras el preentrenamiento, el modelo es ajustado mediante *fine-tuning* supervisado y aprendizaje por refuerzo con retroalimentación humana (*Reinforcement Learning from Human Feedback*) para que sus respuestas sean útiles, inofensivas y honestas [5].
+2. **Alineamiento mediante retroalimentación humana (RLHF):** Tras el preentrenamiento, el modelo es ajustado mediante *fine-tuning* supervisado y aprendizaje por refuerzo con retroalimentación humana (*Reinforcement Learning from Human Feedback*) para que sus respuestas sean útiles, inofensivas y honestas [7].
 
 Los modelos resultantes son capaces de recibir una instrucción en lenguaje natural y generar una respuesta textual que puede incluir razonamiento paso a paso, fragmentos de código, comandos de terminal o planes de acción.
 
 ### 2.2 Agentes Autónomos Basados en LLM
 
-Un **agente** en el contexto de la inteligencia artificial es un sistema que percibe su entorno y toma acciones con el objetivo de maximizar alguna noción de recompensa u objetivo [6]. Un agente LLM extiende este concepto al utilizar un modelo de lenguaje como mecanismo de decisión central. En lugar de programar explícitamente las respuestas ante cada situación, el agente formula su siguiente acción mediante el razonamiento del LLM.
+Un **agente** en el contexto de la inteligencia artificial es un sistema que percibe su entorno y toma acciones con el objetivo de maximizar alguna noción de recompensa u objetivo [2]. Un agente LLM extiende este concepto al utilizar un modelo de lenguaje como mecanismo de decisión central. En lugar de programar explícitamente las respuestas ante cada situación, el agente formula su siguiente acción mediante el razonamiento del LLM.
 
-La arquitectura típica de un agente LLM incluye [7]:
+La arquitectura típica de un agente LLM incluye [4]:
 
 - **Módulo de percepción:** Toma la observación del entorno (por ejemplo, la salida de un comando de terminal) y la incorpora al contexto del LLM.
 - **Módulo de razonamiento:** El LLM procesa el contexto acumulado y genera la siguiente acción, que puede incluir una reflexión interna (*chain-of-thought*) seguida de una acción concreta.
@@ -77,53 +80,45 @@ Este ciclo percepción–razonamiento–acción permite al agente operar de form
 
 Una subclase particularmente relevante de agentes LLM son los **agentes de código** (*coding agents*): sistemas diseñados específicamente para generar y ejecutar código de manera iterativa. Estos agentes tienen acceso a un conjunto de herramientas, como la ejecución de comandos de shell, la lectura y escritura de archivos, y la búsqueda en la web, y pueden llamarlas como parte de su proceso de razonamiento.
 
-Los agentes de código han demostrado capacidades notables en tareas de ingeniería de software: corrección automática de bugs, generación de test cases, refactorización de código y resolución de desafíos de programación competitiva [8]. Estas mismas capacidades los hacen apropiados para simular a un usuario técnico interactuando con un sistema mediante una terminal.
+Los agentes de código han demostrado capacidades notables en tareas de ingeniería de software: corrección automática de bugs, generación de test cases, refactorización de código y resolución de desafíos de programación competitiva. Estas mismas capacidades los hacen apropiados para simular a un usuario técnico interactuando con un sistema mediante una terminal.
 
-### 2.4 OpenCode: Framework de Agente de Código
+### 2.4 OpenCode: Herramienta de Agente de Código
 
-**OpenCode** es un framework de código abierto diseñado para construir agentes de código que interactúan con entornos reales a través de herramientas de terminal. A diferencia de entornos de benchmarking puramente sintéticos, OpenCode está concebido para ejecutar comandos reales en sistemas operativos reales, lo que lo hace particularmente apto para la simulación de usuarios en entornos contenerizados.
+**OpenCode** es una herramienta de código abierto diseñada para construir agentes de código que interactúan con entornos reales a través de herramientas de terminal. A diferencia de entornos de benchmarking puramente sintéticos, OpenCode está concebida para ejecutar comandos reales en sistemas operativos reales, lo que la hace particularmente apta para la simulación de usuarios en entornos contenerizados.
 
-El framework expone al modelo de lenguaje subyacente un conjunto de herramientas entre las que se incluyen: ejecución de comandos de bash, lectura y escritura de archivos, y solicitudes web. El LLM recibe un objetivo en lenguaje natural como parte de su *system prompt*, junto con el historial de acciones y observaciones previas, y genera la siguiente acción a tomar.
+La herramienta expone al modelo de lenguaje subyacente un conjunto de capacidades entre las que se incluyen: ejecución de comandos de bash, lectura y escritura de archivos, y solicitudes web. El LLM recibe un objetivo en lenguaje natural como parte de su *system prompt*, junto con el historial de acciones y observaciones previas, y genera la siguiente acción a tomar.
 
-### 2.5 Modelo de Lenguaje Utilizado: Qwen3-Coder
+### 2.5 Modelos de Lenguaje Utilizados: Qwen3.5 9B y Llama3.1 8B
 
-Para este trabajo se utilizó **Qwen3-Coder** como motor de razonamiento del agente. Qwen3-Coder es un modelo de lenguaje de gran escala desarrollado por el equipo de Qwen de Alibaba Cloud, especializado en tareas de generación y comprensión de código [9]. El modelo se distingue por su fuerte rendimiento en benchmarks de programación y su capacidad para razonar sobre entornos de terminal, incluyendo la interpretación de mensajes de error, la depuración de comandos fallidos y la ejecución de secuencias multi-paso.
+Para este trabajo se utilizaron dos modelos de lenguaje de código abierto que operan como el motor de razonamiento del agente: **Qwen3.5 9B**, desarrollado por Alibaba Cloud, y **Llama3.1 8B**, desarrollado por Meta. Ambos modelos pertenecen a la categoría de modelos compactos (8–9 mil millones de parámetros) y son representatives del estado del arte actual en modelos abiertos de su escala. La justificación detallada de su elección se presenta en la sección 3.4.
 
-La elección de Qwen3-Coder se fundamenta en su orientación explícita hacia tareas de código e interacción con sistemas, lo que lo convierte en un candidato adecuado para la simulación de un administrador de bases de datos que trabaja principalmente a través de una terminal Linux.
+**Qwen3.5 9B** corresponde a la serie de modelos compactos presentada por Alibaba en 2026, optimizada para tareas de razonamiento, programación y comprensión visual dentro de una arquitectura de apenas 9.000 millones de parámetros. En el índice de inteligencia compuesto de Artificial Analysis, que evalúa razonamiento, conocimiento, matemática y programación de forma conjunta, Qwen3.5 9B obtiene un puntaje de 25 puntos, ubicándose muy por encima del promedio de modelos comparables, que ronda los 9 puntos. En benchmarks específicos de razonamiento avanzado, el modelo supera a GPT-OSS-120B, un modelo aproximadamente trece veces más grande, en GPQA Diamond (81.7 frente a 80.1) y en MMLU-Pro (82.5 frente a 80.8), lo que evidencia una eficiencia notable en relación con su escala de parámetros. [8]
 
-### 2.6 Cyber Ranges y Simulación de Comportamiento Benigno
+**Llama3.1 8B**, por su parte, forma parte de la familia Llama 3.1 lanzada por Meta en 2024, y se mantuvo durante un período prolongado como una de las referencias más sólidas entre los modelos abiertos de tamaño similar. El modelo instruido alcanza un puntaje de 73.0 en MMLU evaluado con cadena de razonamiento (CoT) en configuración zero-shot, y de 72.6 en HumanEval, el benchmark estándar para evaluar generación de código. En tareas matemáticas, el modelo obtiene 84.5 en GSM-8K bajo evaluación de 8 ejemplos con cadena de razonamiento, lo que confirma su solidez en tareas de razonamiento estructurado, una capacidad directamente relevante para la formulación de consultas SQL y la depuración de comandos fallidos. [5]
 
-Un **cyber range** es una infraestructura controlada que replica entornos de red y sistemas reales con el propósito de llevar a cabo entrenamiento en ciberseguridad, desarrollo y prueba de herramientas de defensa, e investigación sobre técnicas de ataque y detección [1]. A diferencia de los laboratorios físicos o los entornos de producción, los cyber ranges ofrecen un espacio seguro donde es posible ejecutar ataques reales sin riesgo para sistemas productivos.
+---
 
-Para que un cyber range sea útil en el contexto de la detección de intrusiones, es imprescindible que el tráfico de red y la actividad del sistema sean realistas. Un sistema de detección de intrusiones (IDS) entrenado o evaluado únicamente sobre tráfico de ataque —sin actividad benigna de fondo— aprenderá clasificadores trivialmente sesgados que no generalizan al mundo real [2]. De igual modo, la evaluación de la tasa de falsos positivos de un IDS requiere disponer de actividad benigna convincente que el sistema pueda confundir con actividad maliciosa.
+### 2.6 Importancia de la Simulación de Comportamiento Benigno
 
-Esta necesidad de actividad benigna realista es la motivación directa de este trabajo. Históricamente, la generación de dicha actividad ha dependido de scripts predefinidos o de la participación activa de personas. Los scripts son rígidos: ejecutan siempre la misma secuencia de acciones, en el mismo orden, con la misma temporización, lo que los hace trivialmente distinguibles del comportamiento humano por cualquier clasificador con algo de sofisticación. La participación humana, en cambio, no escala ni es reproducible. Los agentes LLM ofrecen una tercera vía: comportamiento autónomo, variable y coherente con el rol asignado, generado de manera completamente automatizada.
+La simulación de comportamiento benigno desempeña un papel fundamental en la investigación en ciberseguridad, ya que permite evaluar y validar herramientas como los sistemas de detección de intrusiones, mecanismos de detección de anomalías y otras soluciones de monitoreo bajo condiciones más cercanas a las de un entorno real. La presencia de actividad legítima y variada resulta esencial para determinar si estos sistemas son capaces de diferenciar correctamente entre comportamientos normales y acciones maliciosas.
 
-### 2.7 PostgreSQL como Entorno de Trabajo
+Tradicionalmente, esta actividad se ha generado mediante scripts automatizados o mediante la participación de usuarios humanos. Mientras que los scripts suelen producir patrones repetitivos y predecibles, la interacción humana ofrece un comportamiento más realista, aunque con un costo elevado y escasa escalabilidad. En este contexto, los agentes impulsados por Modelos de Lenguaje de Gran Escala (LLMs) representan una alternativa prometedora, ya que pueden interpretar objetivos en lenguaje natural, adaptarse dinámicamente al entorno y generar secuencias de acciones más variadas y coherentes con el comportamiento de un usuario real.
+
+---
+
+### 2.7 PostgreSQL como entorno de trabajo
 
 **PostgreSQL** es un sistema de gestión de bases de datos relacionales (RDBMS) de código abierto, ampliamente utilizado en entornos empresariales y académicos. Su elección como sistema objetivo del agente responde a varios factores: es uno de los sistemas de bases de datos más documentados en el corpus de entrenamiento de los LLMs (lo que maximiza la competencia del agente en esta área), es de código abierto (lo que facilita su integración en el entorno Docker), y es representativo de los sistemas que un DBA real administraría en un entorno corporativo.
 
-Las operaciones típicas que el agente realiza sobre PostgreSQL incluyen consultas de lectura (`SELECT`), operaciones de escritura (`INSERT`, `UPDATE`, `DELETE`), creación y modificación de esquemas (`CREATE TABLE`, `ALTER TABLE`), operaciones de mantenimiento (`VACUUM`, `ANALYZE`), y verificación de estado del servidor mediante vistas del sistema (`pg_stat_activity`, `pg_stat_user_tables`, etc.).
 
 ### 2.8 Contenerización con Docker
 
-Los experimentos se realizaron en un entorno contenerizado utilizando **Docker** [10]. La contenerización ofrece varias ventajas fundamentales para este tipo de experimentos:
+Los experimentos se realizaron en un entorno contenerizado utilizando **Docker**. La contenerización ofrece varias ventajas fundamentales para este tipo de experimentos:
 
 - **Aislamiento:** Cada ejecución del agente opera en un entorno limpio y reproducible, eliminando efectos secundarios entre experimentos.
 - **Reproducibilidad:** La imagen de Docker captura el estado exacto del sistema (sistema operativo, dependencias, configuración de red) garantizando que los resultados sean comparables entre ejecuciones.
 - **Escalabilidad:** Es posible ejecutar múltiples instancias del agente en paralelo sin interferencia mutua.
 - **Seguridad:** El aislamiento del contenedor limita el impacto de las acciones del agente sobre el sistema anfitrión.
-
-### 2.9 Métricas de Evaluación de Agentes
-
-La evaluación del rendimiento de un agente autónomo es un problema no trivial. En ausencia de una función de recompensa escalar bien definida, es necesario recurrir a métricas proxy que aproximen la calidad del comportamiento. Para este trabajo, se adoptan las siguientes métricas principales:
-
-- **Tasa de éxito por tipo de comando:** Proporción de veces que un determinado tipo de comando (e.g., `SELECT`, `curl`) se ejecuta exitosamente.
-- **Distribución de códigos de salida:** Análisis de los códigos de retorno de los procesos ejecutados por el agente, donde el código 0 indica éxito y los códigos distintos indican diferentes categorías de error.
-- **Frecuencia de comandos:** Conteo promedio de comandos de cada tipo emitidos por el agente por ejecución.
-- **Evolución temporal del comportamiento:** Análisis de cómo varía la tasa de errores a lo largo de la ejecución del agente.
-
-Estas métricas permiten caracterizar tanto la **eficacia** del agente (¿logra completar las tareas?) como su **estilo de comportamiento** (¿cómo las afronta?).
 
 ---
 
@@ -131,29 +126,53 @@ Estas métricas permiten caracterizar tanto la **eficacia** del agente (¿logra 
 
 ### 3.1 Arquitectura del Sistema
 
-El sistema implementado consta de los siguientes componentes:
+El entorno de experimentación presenta una topología de red estructurada en tres subredes lógicas, las cuales convergen en un enrutador central encargado de gestionar e inspeccionar el tráfico.
 
-```
-┌─────────────────────────────────────────────┐
-│              Entorno Docker                  │
-│                                             │
-│   ┌──────────────┐    ┌──────────────────┐  │
-│   │  Agente      │    │  PostgreSQL       │  │
-│   │  OpenCode    │◄──►│  (remoto/local)   │  │
-│   │  (LLM:       │    └──────────────────┘  │
-│   │  Qwen3-Coder)│                          │
-│   └──────┬───────┘                          │
-│          │ comandos de terminal              │
-│          ▼                                  │
-│   ┌──────────────┐                          │
-│   │  Shell Linux │                          │
-│   └──────────────┘                          │
-└─────────────────────────────────────────────┘
-```
+![Arquitectura del sistema](Trident/scripts/db_admin_experiments/arquitectura.png)
 
-**Figura 1:** Arquitectura general del sistema.
+#### Segmento del Agente (`lab_net_a` — 172.30.0.0/24)
 
-El agente recibe un objetivo de alto nivel en lenguaje natural y lo ejecuta íntegramente mediante comandos de terminal. No se provee al agente de ningún script predefinido: toda la secuencia de acciones es generada autónomamente por el LLM.
+Constituye la red interna designada para la operación del agente autónomo. Alberga un único nodo de procesamiento denominado `lab_compromised` (172.30.0.10). Por diseño arquitectónico, la totalidad del tráfico saliente de este segmento es enrutada obligatoriamente a través del nodo central.
+
+#### Segmento del Servidor (`lab_net_b` — 172.31.0.0/24)
+
+Corresponde a la red interna que aloja la infraestructura de servicios y almacenamiento. Dispone de un único nodo, identificado como `lab_server` (172.31.0.10). La comunicación entre este entorno y el segmento del agente se encuentra aislada a nivel de capa 2 y es alcanzable de manera exclusiva mediante el enrutador central.
+
+#### Segmento de Salida (`lab_egress` — 172.32.0.0/24)
+
+Subred configurada para proveer conectividad hacia el exterior (Internet). La topología restringe la conexión directa, vinculando únicamente al enrutador central a esta interfaz. Su propósito es habilitar la capacidad de investigación externa por parte del agente (e.g., consulta de documentación técnica oficial), canalizando y procesando el tráfico desde los segmentos internos.
+
+---
+
+#### Distribución de Servicios por Nodo
+
+#### Enrutador Central (`lab_router`)
+
+**Interfaces:** 172.30.0.1 / 172.31.0.1 / 172.32.0.1
+Actúa como el eje troncal de la topología. Su posición estratégica entre las subredes garantiza la observabilidad y el control absoluto de las comunicaciones entre el agente y el servidor.
+
+* **Enrutamiento IP:** Gestión del tráfico de capa 3 entre los tres segmentos de red definidos.
+* **Servicio de Resolución de Nombres (DNS):** Implementado mediante `dnsmasq`, configurado para delegar las consultas a *resolvers* públicos externos.
+* **Monitorización de Red:** Captura sistemática de paquetes (`tcpdump`) almacenada en formato PCAP para su posterior análisis forense y auditoría.
+
+#### Nodo del Agente (`lab_compromised` — 172.30.0.10)
+
+Sistema informático donde se ejecuta el agente. Representa el vector inicial para las actividades e interacciones del experimento.
+
+* **Servidor HTTP OpenCode (Puerto 4096):** Funciona como *backend* del Modelo de Lenguaje Grande (LLM), proporcionando la interfaz para la inferencia y ejecución de herramientas (*tool calls*).
+* **Cliente Relacional (`psql`):** Empleado por el agente para establecer la conexión e interactuar con el motor de base de datos alojado en el segmento del servidor.
+* **Cliente HTTP (`curl`):** Herramienta utilizada por el agente para simular el tráfico de investigación web y realizar peticiones salientes.
+* **Servicio SSH (Puerto 22):** Habilita la administración remota, fuera de banda, del nodo.
+
+#### Nodo de Servicios (`lab_server` — 172.31.0.10)
+
+Infraestructura de destino que aloja los recursos críticos administrados y evaluados por el agente.
+
+* **Motor de Base de Datos PostgreSQL (Puerto 5432):** Instancia principal que contiene el esquema de pruebas (`labdb`).
+* **Servicio SSH (Puerto 22):** Permite el acceso administrativo al entorno del servidor.
+
+
+
 
 ### 3.2 Perfil del Agente: Administrador de Bases de Datos
 
@@ -171,213 +190,269 @@ Los **objetivos primarios** asignados al agente son:
 
 El agente fue provisto de la dirección IP de un servidor PostgreSQL remoto (`172.31.0.10`) como punto de conexión inicial.
 
-### 3.3 Configuración de los Experimentos
 
-Se realizaron un total de **100 ejecuciones independientes**. Cada ejecución tuvo una duración de **2.700 segundos (45 minutos)**, una extensión seleccionada por aproximar la duración de una sesión de trabajo realista.
+### 3.3 Herramientas Utilizadas
 
-La decisión de ejecutar 100 instancias independientes responde a la necesidad de obtener estimaciones estadísticamente robustas del comportamiento del agente, ya que la naturaleza estocástica del LLM introduce variabilidad entre ejecuciones. Con 100 repeticiones es posible calcular medias y distribuciones confiables para cada métrica.
+Para el desarrollo y ejecución de los experimentos se emplearon distintas herramientas y tecnologías. **OpenCode** se utilizó como framework de agente de código de código abierto, constituyendo la base del agente benigno, mientras que **Qwen3.5:9B** y **Llama3.1** funcionaron como los modelos de lenguaje de gran escala que actuaron como motores de razonamiento del agente. El entorno de ejecución se aisló mediante **Docker**, sobre el cual se desplegó **Ollama** para ejecutar los modelos y correr los experimentos de manera local, mientras que **PostgreSQL** se empleó como el sistema de gestión de bases de datos objetivo. El script que orquesta los experimentos fue desarrollado en **Python**, y el procesamiento y la visualización de los logs de ejecución se realizaron con las librerías **Pandas** y **Matplotlib**. Las interfaces de dashboard y configuración se construyeron con **React** y **TypeScript**, y la automatización de las tareas de build, run, stop y limpieza del entorno se gestionó mediante **Make**.
 
-Las condiciones de cada ejecución son idénticas al inicio: misma imagen de Docker, mismo *system prompt*, misma dirección del servidor objetivo. Sin embargo, como el LLM introduce variabilidad en cada generación, el comportamiento concreto del agente difiere de ejecución en ejecución, lo que es precisamente lo que se busca para simular la variabilidad de un usuario real.
+### 3.4 Configuración de los Experimentos
 
-### 3.4 Métricas y Herramientas de Medición
+Se llevaron a cabo 30 ejecuciones independientes por modelo, evaluando el rendimiento del agente bajo dos arquitecturas distintas: Qwen3.5 9B y Llama3.1 8B. Ambos modelos fueron sometidos a las mismas condiciones experimentales: se empleó la misma instancia de la base de datos, el mismo system prompt y el mismo goal (objetivo) en todas las ejecuciones. No se impuso ningún límite de tiempo sobre la duración de cada instancia.
 
-#### 3.4.1 Categorización de Comandos
+La elección de estos dos modelos se fundamenta en tres criterios principales: su disponibilidad como pesos abiertos, lo que permite ejecutarlos de manera local sin depender de servicios externos; su tamaño reducido (8–9 mil millones de parámetros), que posibilita correrlos en hardware de cómputo moderado sin sacrificar de forma drástica la calidad de las respuestas; y su desempeño competitivo en benchmarks recientes, particularmente en tareas de programación y razonamiento sobre instrucciones complejas (ver sección 2.5).
 
-Los comandos ejecutados por el agente fueron agrupados en las siguientes categorías:
+La decisión de realizar 30 ejecuciones por modelo responde a la necesidad de obtener estimaciones estadísticamente robustas del comportamiento del agente. Dado que la naturaleza estocástica de los LLM introduce variabilidad entre ejecuciones, este conjunto de repeticiones permite calcular medias y distribuciones confiables para las métricas de interés. La cantidad de 30 repeticiones se adoptó como un compromiso entre la robustez estadística y los recursos de cómputo y tiempo disponibles, considerando que un número mayor habría exigido un costo computacional significativamente superior sin garantías de una ganancia proporcional en la precisión de las estimaciones.
 
-| Categoría | Comandos incluidos |
-|---|---|
-| Operaciones SQL de lectura | `SELECT` |
-| Operaciones SQL de escritura | `INSERT`, `UPDATE`, `DELETE` |
-| Tareas administrativas SQL | `CREATE TABLE`, `ALTER TABLE`, `GRANT`, `VACUUM`, etc. |
-| Solicitudes web | `curl` |
-| Gestión del sistema de archivos | `ls`, `grep`, `cat`, y variantes |
-| Consultas de información del sistema | `ps`, `top`, `netstat`, `df`, etc. |
-| Pausas de ejecución | `sleep` |
-| Otros | Comandos diagnósticos, reinicio de servicios, escalada de privilegios, sondeos de red |
+### 3.5 Recolección y Procesamiento de Datos
 
-#### 3.4.2 Análisis de Códigos de Salida
+Durante cada ejecución, OpenCode registra de manera automática todos los eventos generados por el agente en un archivo de log en formato JSON Lines (`opencode_stdout.jsonl`), donde cada línea corresponde a un evento independiente codificado como un objeto JSON. Cada evento posee un campo `timestamp` que indica el momento de registro como un valor entero en milisegundos, un campo `type` que clasifica el tipo de evento, y un campo `part` que contiene los detalles específicos del mismo.
 
-Los procesos ejecutados en Linux retornan un código de salida (*exit code*) que indica el resultado de la ejecución. Los códigos más relevantes para este análisis son:
+De los distintos tipos de evento registrados (mensajes de texto, pasos de razonamiento, invocaciones de herramientas), únicamente los eventos de tipo `tool_use` son relevantes para el cálculo de las métricas, ya que son los que documentan las acciones concretas ejecutadas por el agente sobre el entorno. Dentro de este evento, los campos utilizados son los siguientes:
 
-| Código | Significado |
-|---|---|
-| `0` | Éxito |
-| `1` | Error genérico |
-| `2` | Uso incorrecto del comando |
-| `127` | Comando no encontrado (binario ausente) |
-| Otros | Códigos específicos de cada programa |
+| Campo | Descripción |
+|-------|-------------|
+| `part.tool` | Nombre de la herramienta invocada; se filtran exclusivamente los eventos con `tool = "bash"` |
+| `part.state.status` | Estado de la invocación; se procesan únicamente los eventos con estado `completed` |
+| `part.state.input.command` | Texto exacto del comando bash ejecutado |
+| `part.state.metadata.exit` | Código de salida retornado por el proceso (entero); `0` indica éxito, cualquier otro valor indica error |
 
-La distribución de estos códigos a lo largo de las ejecuciones sirve como métrica de "limpieza operacional" del agente: una predominancia de `exit 0` indica alta confiabilidad, mientras que una presencia significativa de `exit 1` o `exit 2` señala errores frecuentes de sintaxis o lógica.
+El procesamiento de los registros comprende tres etapas. En primer lugar, se filtran los eventos conservando únicamente las invocaciones de la herramienta `bash` que hayan finalizado (estado `completed`). En segundo lugar, se descartan los registros duplicados que el OpenCode genera al reemitir eventos de invocaciones previas cada vez que actualiza el contexto del agente, utilizando para ello el identificador único de cada invocación. En tercer lugar, se extraen, para cada invocación única, el texto del comando y su código de salida. Los eventos cuyo código de salida es nulo o está ausente se descartan, al no poder ser clasificados como exitosos o fallidos.
 
-#### 3.4.3 Evolución Temporal del Comportamiento
+El resultado del procesamiento es, para cada ejecución, una lista ordenada de pares `(comando, código de salida)` que constituye la base sobre la que se calculan las métricas definidas en la sección siguiente. Para la métrica de duración se utilizan además los *timestamps* de todos los eventos registrados en la ejecución, calculando el intervalo temporal entre el primer y el último evento.
 
-Para analizar si el agente aprende o adapta su comportamiento a lo largo de la ejecución, se calculó la tasa de errores (proporción de comandos con `exit != 0`) para cada segmento de la línea temporal normalizada de cada ejecución. Esto permite detectar si existe una fase inicial de exploración/descubrimiento del entorno, seguida de una fase de estabilización.
 
-### 3.5 Herramientas Utilizadas
+### 3.6 Métricas y Herramientas de Medición
 
-- **OpenCode:** Framework de agente de código (open source) utilizado como base del agente benigno.
-- **Qwen3-Coder:** Modelo de lenguaje de gran escala utilizado como motor de razonamiento.
-- **Docker:** Sistema de contenerización para el entorno de ejecución aislado.
-- **PostgreSQL:** Sistema de gestión de bases de datos objetivo.
-- **Python + Pandas + Matplotlib:** Utilizados para el procesamiento y visualización de los logs de ejecución.
+Con el fin de caracterizar el comportamiento de los agentes de manera sistemática y reproducible, se definieron un conjunto de métricas cuantitativas aplicadas sobre los registros de comandos bash generados durante las ejecuciones. Cada métrica fue calculada de forma independiente para ambos modelos evaluados (**llama3.1:8b** y **qwen3.5:9b**), a partir de 30 ejecuciones válidas de cada uno, permitiendo tanto el análisis individual de cada modelo como la comparación entre ellos.
 
-### 3.6 Recolección y Procesamiento de Datos
+Las métricas se agrupan en cinco dimensiones de análisis: (1) la categorización de los comandos ejecutados, que sirve de base para las restantes; (2) la tasa de éxito por tipo de comando; (3) la evolución de la tasa de errores a lo largo de la ejecución; (4) la duración de las ejecuciones; y (5) el volumen de comandos por categoría. Los resultados obtenidos de estas métricas se presentan y analizan en la Sección 4.
 
-Los logs de cada ejecución registraron, para cada comando ejecutado:
+---
 
-- El texto exacto del comando.
-- El código de salida retornado.
-- La salida estándar y la salida de error.
-- El timestamp relativo dentro de la ejecución.
+#### 3.6.1 Categorización de Comandos
 
-A partir de estos logs se construyeron las métricas descritas anteriormente. La categorización de los comandos se realizó mediante análisis del texto del comando (identificando el binario o instrucción SQL inicial). Los logs de 100 ejecuciones de 45 minutos cada una representan un volumen considerable de datos, procesado de manera automatizada.
+Todos los comandos bash ejecutados por los agentes fueron clasificados en cuatro categorías principales mediante inspección del contenido del comando. Esta categorización constituye la base sobre la que se construyen las métricas de volumen y tasa de éxito, y permite identificar patrones de comportamiento y comparar las estrategias adoptadas por cada modelo.
 
-### 3.7 Resultados de los Experimentos
+Las categorías principales y sus criterios de clasificación son los siguientes:
 
-#### 3.7.1 Distribución de Comandos por Tipo
+| Categoría | Criterio de clasificación | Ejemplo |
+|-----------|---------------------------|---------|
+| **SQL** | Contiene `psql` o contiene alguna de las palabras clave SQL (`SELECT`, `INSERT`, `UPDATE`, `DELETE`, `CREATE`, `ALTER`, `DROP`, `TRUNCATE`) como palabra completa, es decir, delimitada por límites de palabra | `PGPASSWORD=labpass psql -h 172.31.0.10 -U labuser -d labdb -c "SELECT * FROM employees;"` |
+| **sleep** | El comando comienza con `sleep ` (seguido de un espacio o tabulador) | `sleep 60` |
+| **curl** | Contiene la cadena `curl ` | `curl -s https://www.postgresql.org/docs/current/` |
+| **Otros** | Cualquier comando que no pertenece a las categorías anteriores | `pg_ctl start`, `git status`, `ls` |
 
-El análisis de los comandos ejecutados a lo largo de las 100 ejecuciones revela un perfil de uso coherente con el rol asignado.
+La categoría **SQL** se desglosa a su vez en las siguientes subcategorías, asignadas en orden de prioridad según la primera palabra clave encontrada en el comando:
 
-**Figura 2:** *Conteo promedio de comandos por ejecución, discriminado por categoría.*
+| Subcategoría | Criterio | Ejemplo |
+|--------------|----------|---------|
+| SELECT | Contiene `SELECT` | `SELECT * FROM employees;` |
+| INSERT | Contiene `INSERT` | `INSERT INTO employees VALUES (...);` |
+| UPDATE | Contiene `UPDATE` | `UPDATE employees SET salary = 50000;` |
+| DELETE | Contiene `DELETE` | `DELETE FROM employees WHERE id = 1;` |
+| CREATE | Contiene `CREATE` | `CREATE TABLE employees (...);` |
+| ALTER | Contiene `ALTER` | `ALTER TABLE employees ADD COLUMN age INT;` |
+| DROP | Contiene `DROP` | `DROP TABLE temp_employees;` |
+| Metacomandos psql | El comando pertenece a la categoría SQL pero no contiene ninguna de las palabras clave anteriores; típicamente se trata de metacomandos psql como `\l`, `\d`, `\dt` | `psql -c "\dt"` |
 
-Los hallazgos principales son los siguientes:
+La categoría **Otros** se desglosa en las siguientes subcategorías:
 
-- **Alta frecuencia de `SELECT`:** Las consultas de lectura son, por amplio margen, las operaciones más frecuentes. Esto es consistente con un perfil de administrador de bases de datos cuya tarea principal en este contexto es la generación de reportes sobre el estado del sistema y los datos almacenados.
-- **Uso significativo de `curl`:** Las solicitudes web aparecen con frecuencia considerable, reflejando el objetivo del agente de consultar referencias técnicas externas durante su trabajo. Esto es un comportamiento esperable: un DBA real consulta documentación, foros de soporte o APIs externas durante sus tareas.
-- **Presencia de `sleep`:** Los comandos de pausa aparecen regularmente, lo que indica que el agente cumple con el objetivo de simular dinámicas temporales humanas intercalando trabajo con esperas.
-- **Operaciones de escritura (`INSERT`, `UPDATE`, `DELETE`):** Presentes en proporciones menores que `SELECT`, lo cual es también consistente con el perfil: un DBA genera muchos más reportes que modificaciones directas de datos en una sesión típica.
+| Subcategoría | Criterio | Ejemplo |
+|--------------|----------|---------|
+| pg_ctl / systemctl | Contiene `pg_ctl`, `systemctl` o `service ` | `pg_ctl start -D /var/lib/pgsql/data` |
+| git | Contiene `git ` | `git status` |
+| \dt \l \d (meta) | Contiene un metacomando psql sin prefijo `psql` (`\d`, `\l` o `\t`) o el comando es exactamente `\l`, `\d` o `\dt` | `\dt` |
+| ANALYZE | Contiene `analyze` | `ANALYZE employees;` |
+| ls / cat / echo | Contiene `ls `, `cat `, `echo ` o `cd ` | `ls -la` |
+| Otros | Comandos no clasificables en las subcategorías anteriores | Comandos atípicos o no categorizables |
 
-#### 3.7.2 Tasa de Éxito por Tipo de Comando
+---
 
-La tasa de éxito de los comandos varía según la categoría:
+#### 3.6.2 Tasa de Éxito por Tipo de Comando
 
-**Figura 3:** *Tasa de éxito vs. tasa de error para las 10 acciones más frecuentes.*
+Esta métrica cuantifica, para cada categoría principal, la proporción de comandos que finalizaron exitosamente respecto del total ejecutado en dicha categoría. Se define como:
 
-| Categoría de comando | Tasa de éxito aproximada |
-|---|---|
-| `SELECT` | 95–100% |
-| `INSERT` | 92–100% |
-| `UPDATE` | 92–100% |
-| `DELETE` | 92–100% |
-| `curl` (solicitudes web) | ~85–90% |
-| `sleep` | ~100% |
-| Gestión de archivos (`ls`, `grep`, `cat`) | ~90–95% |
-| Otros (diagnóstico, red, escalada) | ~38% |
+$$\text{Tasa de éxito}_c = \frac{|\{\text{cmd} \in c : \text{exit\_code}(\text{cmd}) = 0\}|}{|\{\text{cmd} \in c\}|} \times 100$$
 
-Las operaciones SQL fundamentales (`SELECT`, `INSERT`, `UPDATE`, `DELETE`) alcanzan tasas de éxito de entre el 92% y el 100%, lo que demuestra una alta confiabilidad del agente en su dominio principal de operación.
+$$\text{Tasa de error}_c = 100 - \text{Tasa de éxito}_c$$
 
-La categoría `otros` presenta la tasa de error más elevada (~62%). Esta categoría agrupa comandos diagnósticos para reinicio de servicios, intentos de escalada de privilegios, llamadas directas a la CLI de la base de datos y sondeos de red. El elevado error en esta categoría revela el **comportamiento de resolución de problemas** del agente: cuando sus herramientas principales fallan, el agente experimenta con comandos alternativos, muchos de los cuales no están disponibles o requieren permisos que el agente no posee. Cabe señalar que parte de esta tasa de error se explica por la inclusión de comandos `webfetch` —una herramienta nativa de OpenCode— que registraron un 100% de fallos durante los experimentos debido a problemas a nivel de herramienta ajenos al razonamiento del agente.
+donde $c$ denota una categoría principal (SQL, sleep, curl, Otros).
 
-#### 3.7.3 Distribución de Códigos de Salida
+El criterio de éxito o fracaso de un comando se determina a partir de su **código de salida** (*exit code*), valor entero que el proceso devuelve al sistema operativo al finalizar. En entornos Unix/Linux, este código sigue una convención estándar cuyo significado se detalla a continuación:
 
-**Figura 4:** *Distribución promedio de códigos de salida a lo largo de las ejecuciones.*
+| Código | Significado | Descripción |
+|--------|-------------|-------------|
+| 0 | Éxito | El comando se ejecutó correctamente |
+| 1 | Error general | Error genérico del comando (sintaxis inválida, recurso no encontrado, operación fallida) |
+| 2 | Error de uso | Mal uso del comando o argumentos incorrectos |
+| 127 | Comando no encontrado | El binario o script no existe en el PATH del entorno |
+| 128+N | Señal recibida | El proceso fue terminado por la señal N (p. ej., 130 = SIGINT, 137 = SIGKILL) |
 
-La distribución de códigos de salida muestra una clara predominancia de `exit 0` (éxito), lo que confirma la alta confiabilidad general del agente. La presencia de `exit 1` y `exit 2` es menor y concentrada en las categorías de comandos menos dominadas por el agente (especialmente la categoría `otros`). Los casos de `exit 127` (binario no encontrado) son infrecuentes pero significativos: ocurren cuando el agente intenta utilizar herramientas que no están instaladas en el entorno del contenedor, lo que refleja una brecha entre el conocimiento del modelo (entrenado sobre documentación de sistemas generales) y el entorno específico de ejecución.
+Un comando se considera exitoso cuando su código de salida es 0, y fallido en caso contrario. Una tasa de éxito elevada indica que el modelo formula y ejecuta correctamente ese tipo de operación. Por el contrario, una tasa baja puede reflejar situaciones diversas: comandos sintácticamente mal formados (exit 2), referencias a recursos o binarios no disponibles en el entorno (exit 127), permisos insuficientes o fallos lógicos en la operación solicitada (exit 1), o terminaciones forzadas por señal del sistema operativo (exit 128+N). La comparación de esta métrica entre modelos permite evidenciar diferencias en la confiabilidad de cada uno al ejecutar cada tipo de operación.
 
-#### 3.7.4 Evolución Temporal de la Tasa de Errores
+---
 
-**Figura 5:** *Tasa de errores (exit code ≠ 0) en función de la posición relativa en la ejecución.*
+#### 3.6.3 Tasa de Errores por Posición en la Ejecución
 
-El análisis de la evolución temporal revela un patrón consistente a través de las 100 ejecuciones:
+Esta métrica analiza cómo evoluciona la tasa de errores a lo largo de la ejecución del agente, con el objetivo de detectar posibles patrones temporales en el comportamiento: una mejora progresiva, una degradación, o una distribución uniforme de los errores.
 
-- **Fase inicial (0–40% de la ejecución):** La tasa de errores es más elevada. El agente se encuentra en una fase de exploración del entorno, intentando establecer conexión con el servidor remoto, verificando herramientas disponibles e intentando diferentes estrategias.
-- **Fase de estabilización (60% en adelante):** La tasa de errores se estabiliza por debajo del 9%. Una vez que el agente ha establecido una estrategia funcional, opera con alta confiabilidad.
+Para su cálculo, los comandos de cada ejecución se ordenan según su posición en la secuencia de ejecución y se dividen en 10 segmentos de igual tamaño, cada uno correspondiente al 10% del total de comandos ejecutados (primer 10%, segundo 10%, ..., último 10%). En cada segmento se calcula la tasa de error local:
 
-Este patrón es análogo a la curva de aprendizaje de un empleado humano que comienza un trabajo nuevo: los primeros momentos son de orientación y prueba, mientras que una vez asentado el workflow, la eficiencia aumenta.
+$$\text{Tasa de error}_{s,i} = \frac{|\{\text{cmd} \in s : \text{exit\_code}(\text{cmd}) \neq 0\}|}{|\{\text{cmd} \in s\}|} \times 100$$
 
-#### 3.7.5 Acción Destacada: Fallo de Conexión y Cambio de Estrategia
+donde $s$ denota un segmento e $i$ una ejecución particular. Posteriormente, se promedian los valores de cada segmento entre todas las ejecuciones del modelo:
 
-El comportamiento más notable observado durante los experimentos fue la respuesta del agente ante el fallo de conexión al servidor PostgreSQL remoto. Este caso ilustra con claridad la capacidad de adaptación emergente del agente:
+$$\overline{\text{Tasa de error}}_{s} = \frac{1}{n} \sum_{i=1}^{n} \text{Tasa de error}_{s,i}$$
 
-**Situación inicial:** El agente recibe la instrucción de conectarse al servidor PostgreSQL en `172.31.0.10` para realizar tareas de administración rutinaria.
+donde $n$ es el número de ejecuciones válidas. Adicionalmente, se calcula el intervalo de confianza del 95% como $\pm 1{,}96 \cdot \sigma_s / \sqrt{n}$, donde $\sigma_s$ es el desvío estándar entre ejecuciones para el segmento $s$, como medida de dispersión de la tasa de error promedio.
 
-**Secuencia de acciones observada:**
+La forma de la curva resultante permite distintas interpretaciones sobre el comportamiento del agente a lo largo de la ejecución: una curva ascendente indica que los errores se incrementan con el tiempo, lo que podría señalar una degradación del comportamiento del agente en sesiones prolongadas; una curva descendente indica que la tasa de error disminuye hacia el final de la ejecución, sugiriendo un ajuste progresivo del agente a la tarea; y una curva plana indica que la tasa de error se mantiene estable a lo largo de toda la sesión.
 
-1. El agente intenta conectarse directamente mediante el cliente `psql`. La conexión es rechazada inmediatamente.
-2. Realiza verificaciones básicas de conectividad (ping, `telnet`, `nc`) para confirmar que el servidor no es alcanzable desde su entorno.
-3. Intenta establecer un túnel SSH para acceder a la base de datos de manera indirecta. Estos intentos fallan por problemas de autenticación y permisos.
-4. El agente concluye que no tiene ninguna vía viable para alcanzar la base de datos remota, y que tampoco existe una instancia local de PostgreSQL en su entorno.
-5. **Cambio de estrategia:** En lugar de continuar intentando resolver la conectividad remota, el agente instala una instancia local de PostgreSQL en su entorno de ejecución.
-6. Una vez instalada y configurada la instancia local, el agente se conecta localmente, crea un esquema básico con tablas (`employee`, `salary`), inserta datos iniciales y verifica la estructura.
-7. Procede a ejecutar operaciones regulares de base de datos (consultas, inserciones, actualizaciones) íntegramente sobre la base de datos local provisionada por él mismo.
+---
 
-Este comportamiento no fue explícitamente programado ni anticipado en el diseño del agente. Emerge del razonamiento autónomo del LLM ante un entorno hostil. El agente interpreta su objetivo de alto nivel (realizar administración de bases de datos) de manera flexible, priorizando la completitud de la tarea sobre el cumplimiento estricto del método original.
+#### 3.6.4 Duración de las Ejecuciones
 
-**Pseudo-código del proceso de decisión observado:**
+La duración de cada ejecución se define como el tiempo transcurrido entre el primer y el último evento registrado, expresado en minutos:
 
-```
-objetivo = "administrar base de datos en 172.31.0.10"
+$$\text{duración} = \frac{t_{\text{máx}} - t_{\text{mín}}}{1000 \times 60} \text{ minutos}$$
 
-intentar conectar_psql(172.31.0.10)
-si falla:
-    verificar_conectividad(172.31.0.10)  // ping, telnet
-    intentar_ssh_tunnel(172.31.0.10)
-    si falla:
-        // No hay camino al objetivo original
-        instalar_postgresql_local()
-        configurar_base_datos_local()
-        crear_schema_local()       // tablas: employee, salary
-        ejecutar_tareas_normales_en_local()
-```
+donde $t_{\text{máx}}$ y $t_{\text{mín}}$ son los timestamps máximo y mínimo de todos los eventos registrados en la ejecución, expresados en milisegundos. Solo se consideran ejecuciones que cumplan dos condiciones: (1) que contengan al menos un comando bash completado, y (2) que registren al menos dos eventos con timestamp, requisito mínimo para poder calcular un intervalo temporal.
 
-**Figura 6:** *Diagrama de flujo de decisiones del agente ante el fallo de conexión remota.*
+En cuanto a la interpretación de esta métrica, las ejecuciones más largas generalmente implican un mayor número de comandos ejecutados, mientras que una ejecución significativamente más corta puede indicar que el agente falló temprano o terminó antes de completar sus tareas. La variabilidad entre ejecuciones, a su vez, refleja qué tan consistente es el comportamiento del agente, y el promedio permite comparar el costo temporal entre modelos.
+
+---
+
+#### 3.6.5 Volumen de Comandos SQL por Subcategoría
+
+Esta métrica contabiliza el número total de comandos SQL ejecutados por cada modelo, desglosados por subcategoría. A diferencia de la tasa de éxito, que evalúa la calidad de las operaciones, el volumen mide la **cantidad** de comandos emitidos y refleja qué tipo de operaciones prioriza cada modelo en su estrategia de trabajo sobre la base de datos.
+
+El recuento se realiza sobre las 30 ejecuciones válidas de cada modelo, sumando el total de comandos clasificados en cada subcategoría SQL según la taxonomía definida en la sección 3.6.1. La distribución resultante permite inferir el perfil operativo de cada agente: un volumen elevado de comandos SELECT sugiere una estrategia orientada a la consulta y monitoreo de datos, mientras que una predominancia de INSERT, UPDATE o DELETE indica modificación activa de la base de datos; una presencia significativa de CREATE, ALTER o DROP refleja actividades de definición y evolución del esquema, y un alto uso de metacomandos psql (`\l`, `\d`, `\dt`) indica inspección de la estructura y el estado de la base de datos.
+
 
 ---
 
 ## 4. Análisis y Discusión de Resultados
 
-### 4.1 Efectividad General del Agente
+En esta sección se presentan y analizan los resultados obtenidos a partir de las 30 ejecuciones realizadas con cada modelo. Los experimentos fueron ejecutados en condiciones idénticas, lo que permite atribuir las diferencias observadas al comportamiento intrínseco de cada modelo de lenguaje. Las métricas analizadas son: tasa de éxito por tipo de comando, tasa de errores por posición en la ejecución, y duración de las ejecuciones.
 
-Los resultados obtenidos permiten afirmar que el agente benigno basado en Qwen3-Coder es, en términos generales, un simulador efectivo de comportamiento de usuario técnico. La alta tasa de éxito en operaciones SQL (92–100%) confirma que el modelo tiene un dominio sólido de la sintaxis y semántica de las operaciones de base de datos más comunes. Esta competencia es esperable dado que los modelos de la familia Qwen3-Coder han sido entrenados extensamente sobre código y documentación técnica, incluyendo SQL [9].
+---
 
-La distribución de tipos de comandos es también consistente con el perfil asignado: la predominancia de `SELECT` sobre otras operaciones refleja el énfasis en la generación de reportes, mientras que la presencia de `curl` confirma el comportamiento de consulta a referencias externas. En conjunto, estos patrones constituirían tráfico benigno creíble para sistemas de detección de intrusiones que analicen comportamiento de usuario.
+### 4.1 Tasa de Éxito por Tipo de Comando
 
-### 4.2 Comportamiento en Fases: Exploración y Estabilización
 
-La evolución temporal de la tasa de errores revela un comportamiento bifásico que tiene una interpretación clara: el agente dedica la parte inicial de la ejecución a construir un modelo del entorno en el que opera. Durante esta fase de exploración, experimenta con comandos que pueden no estar disponibles, intenta conexiones que pueden fallar y prueba estrategias alternativas. Una vez que ha establecido qué herramientas están disponibles y cuáles no, su comportamiento se vuelve más eficiente y confiable.
+![success_rate_by_type_llama_3_1:8b](Trident/scripts/db_admin_experiments/success_rate_by_type_llama_3_1:8b.png)
 
-Este patrón tiene implicaciones directas para la utilidad del agente como simulador: si bien la fase inicial produce tráfico con una proporción mayor de errores, esto es en sí mismo realista. Un administrador humano que comienza a trabajar en un sistema nuevo también comete más errores inicialmente. La curva de aprendizaje del agente imita, de forma emergente y no programada, este aspecto del comportamiento humano.
+![success_rate_by_command_type_qwen35_9b](Trident/scripts/db_admin_experiments/success_rate_by_command_type_qwen35_9b.png)
 
-Desde la perspectiva del diseño del agente, este hallazgo también sugiere una posible mejora: si el agente fuera provisto de información inicial sobre el entorno (herramientas disponibles, estado de los servicios, configuración de red), la fase de exploración podría acortarse o eliminarse, resultando en un comportamiento más eficiente desde el primer momento. Sin embargo, esta información inicial también reduciría el realismo de la simulación, ya que un usuario humano real también necesitaría cierto tiempo de orientación en un sistema desconocido. El equilibrio entre eficiencia y realismo en esta dimensión es una cuestión de diseño que depende del caso de uso específico.
 
-### 4.3 Capacidad de Adaptación: El Caso de la Base de Datos Local
+#### Volumen total de comandos
 
-El comportamiento observado ante el fallo de conexión remota es el resultado más notable del trabajo y merece un análisis detallado.
+El primer dato relevante surge de la diferencia en el volumen total de comandos ejecutados: **llama3.1:8b** emitió **4.691 comandos** en 30 ejecuciones, mientras que **qwen3.5:9b** emitió apenas **1.755 comandos** bajo las mismas condiciones. Esto representa una diferencia de aproximadamente 2,7 veces en actividad total, lo que indica que llama3.1:8b adopta una estrategia considerablemente más activa, o más iterativa, durante la resolución de la tarea.
 
-El agente no fue instruido explícitamente sobre qué hacer si el servidor remoto no estaba disponible. Su respuesta —instalar una instancia local de PostgreSQL— emerge del razonamiento del LLM sobre el objetivo de alto nivel. Esto ilustra una propiedad fundamental de los agentes LLM: la capacidad de **replanificación dinámica** ante obstáculos no previstos.
+#### Distribución por categoría
 
-Desde una perspectiva positiva, esta capacidad es altamente deseable para un simulador de usuario: un administrador humano real probablemente tomaría una decisión similar si se encontrara con que el servidor remoto no está disponible y su tarea es urgente. Sin embargo, desde una perspectiva de seguridad, este comportamiento también revela un aspecto potencialmente problemático: el agente modifica el entorno de formas no previstas (instalando software). En un contexto de cyber range, estas acciones imprevistas podrían interferir con los experimentos o producir señales de red que no deberían estar presentes.
+La distribución de comandos por categoría revela perfiles operativos marcadamente distintos entre ambos modelos:
 
-### 4.4 Limitaciones Identificadas
+| Categoría | llama3.1:8b | qwen3.5:9b |
+|-----------|-------------|------------|
+| SQL | 84,8% (3.976 cmd) | 63,0% (1.106 cmd) |
+| sleep | 5,2% (244 cmd) | 11,6% (204 cmd) |
+| curl | 9,2% (431 cmd) | 25,1% (441 cmd) |
+| Otros | 0,9% (40 cmd) | 0,3% (5 cmd) |
 
-#### 4.4.1 Conocimiento del Entorno vs. Entorno Real
+Llama3.1:8b concentra casi el 85% de su actividad en comandos SQL, lo que refleja una estrategia centrada en la interacción directa con la base de datos. En contraste, qwen3.5:9b dedica una proporción significativamente mayor a consultas `curl` (25,1%), lo que sugiere una tendencia a buscar información o documentación externa antes de actuar sobre la base de datos. El mayor peso de `sleep` en qwen3.5:9b también indica pausas más frecuentes entre operaciones.
 
-El LLM fue entrenado sobre documentación general de Linux y PostgreSQL, pero el entorno de Docker en el que opera el agente puede diferir de este conocimiento general. Esto explica los casos de `exit 127` (binario no encontrado): el agente intenta usar herramientas que son comunes en sistemas Linux generales pero que no están instaladas en la imagen de Docker. Esta brecha entre el conocimiento del modelo y el entorno real es una limitación fundamental de los agentes LLM en entornos controlados.
+#### Tasa de éxito por categoría
 
-#### 4.4.2 Errores en la Herramienta `webfetch`
+Ambos modelos presentan tasas de éxito similares en la categoría SQL, 85% para llama3.1:8b y 84% para qwen3.5:9b, lo que indica una capacidad equivalente para formular consultas SQL válidas. La diferencia no está en la precisión de los comandos SQL, sino en la estrategia general de cada modelo.
 
-El 100% de fallos registrado para la herramienta `webfetch` no es atribuible al razonamiento del agente sino a un problema técnico a nivel del framework. Si bien esto infló artificialmente la tasa de error en la categoría `otros`, en trabajos futuros debería corregirse esta incompatibilidad o reemplazarse la herramienta por una alternativa funcional.
+Un hallazgo relevante es que tanto `sleep` como `curl` alcanzan una tasa de éxito del **100%** en qwen3.5:9b, mientras que `sleep` en llama3.1:8b registra un 86% de éxito. Esto puede atribuirse a que llama3.1:8b emite variantes de `sleep` con argumentos mal formados en algunos casos, lo cual no ocurre con qwen3.5:9b. Los comandos `curl` de llama3.1:8b también alcanzan el 100% de éxito.
 
-#### 4.4.3 Variabilidad entre Ejecuciones
+---
 
-La naturaleza estocástica del LLM introduce variabilidad entre ejecuciones que, aunque deseable para simular comportamiento humano, también dificulta la caracterización precisa del agente. Ejecuciones individuales pueden diferir considerablemente en la secuencia de acciones tomadas, aunque las métricas agregadas sobre 100 ejecuciones revelan patrones estables.
+## 4.2 Tasa de Errores por Posición Relativa en la Ejecución
 
-#### 4.4.4 Ausencia de Retroalimentación de Objetivos Completados
+![failure_rate_histogram_llama3_1:8b](Trident/scripts/db_admin_experiments/failure_rate_histogram_llama3_1:8b.png)
+![failure_rate_histogram_qwen35_9b](Trident/scripts/db_admin_experiments/failure_rate_histogram_qwen35_9b.png)
 
-El sistema actual no dispone de un mecanismo que permita al agente reportar si consideró que completó su objetivo. La evaluación se basa enteramente en métricas de comportamiento observado (tipos de comandos, tasas de éxito) pero no hay una medida directa de si el agente logró o no el objetivo de alto nivel. Definir y medir esta métrica es una tarea pendiente importante.
+Las curvas obtenidas revelan diferencias cualitativas importantes en la dinámica de error de cada modelo a lo largo de la sesión.
 
-#### 4.4.5 Profundidad del Perfil Simulado
+### Llama3.1:8b: patrón descendente con recuperación tardía
 
-Si bien el agente simula convincentemente varias dimensiones del comportamiento de un DBA (tipos de comandos, pausas, consultas web), otros aspectos del comportamiento humano no son capturados: patrones de horario (el agente no tiene noción de jornada laboral), interacciones con otros usuarios del sistema, o la evolución de hábitos a lo largo de días o semanas.
+Llama3.1:8b exhibe una tasa de error elevada en el primer decil de sus ejecuciones, con valores cercanos al **20%**. Esta tasa desciende de forma sostenida hasta alcanzar un **mínimo de aproximadamente 5%** en la zona central de la ejecución (50–60% del total de comandos), para luego recuperarse hacia el **15%** en el tramo final. Este patrón indica que la mayoría de las sesiones de Llama3.1:8b comparten una fase exploratoria inicial con mayor probabilidad de error, probablemente asociada al establecimiento de la conexión a la base de datos y al reconocimiento del entorno; seguida de una fase más estable, y un reascenso final que podría reflejar intentos sistemáticos de operaciones más complejas o fuera del alcance del entorno una vez agotadas las tareas más directas.
 
-### 4.5 Reflexión sobre la Idoneidad del Enfoque
+### Qwen3.5:9b: patrón ascendente con estabilización y descenso final
 
-Los resultados sugieren que los agentes LLM representan una alternativa genuinamente superior a los scripts predefinidos para la simulación de comportamiento de usuario. La variabilidad emergente, la capacidad de adaptación y la coherencia semántica de las acciones del agente son cualidades que no pueden replicarse con reglas estáticas. Al mismo tiempo, los experimentos ponen en evidencia que el uso de LLMs como motor de simulación introduce nuevos desafíos: comportamientos inesperados (como la instalación del PostgreSQL local), dependencia de la calidad del prompt inicial y sensibilidad a las herramientas disponibles en el entorno.
+Qwen3.5:9b presenta un comportamiento opuesto: la tasa de error es baja en el tramo inicial de sus ejecuciones (~5%), se incrementa hasta alcanzar valores de **12–13%** entre el 20% y el 65% de la sesión, y finalmente desciende hacia el **7%** en los tramos finales. La curva es más irregular que la de llama3.1:8b, con fluctuaciones visibles a lo largo de la sesión, lo que sugiere mayor heterogeneidad entre las ejecuciones individuales que componen el promedio. Este perfil es consistente con una estrategia recurrente en la que el modelo dedica el inicio a exploración con comandos simples, como `curl` y `sleep`, antes de entrar en una fase de mayor actividad sobre la base de datos que introduce más errores, para luego converger hacia operaciones que ya domina.
 
-Un aspecto particularmente valioso desde la perspectiva de la inteligencia artificial es la **generalización que exhibe el agente**. El modelo no fue entrenado específicamente para este entorno ni para este rol: simplemente fue instruido en lenguaje natural y respondió de manera coherente con el contexto. Esto contrasta con los enfoques clásicos basados en reglas, que requieren una ingeniería detallada y explícita de cada comportamiento deseado. La reducción del esfuerzo de programación a cambio de una menor predictibilidad es un trade-off que, para el dominio de la simulación de usuarios, parece favorable.
+### Comparación directa
 
-Finalmente, vale destacar que los resultados de este trabajo son relevantes no solo para el dominio de los cyber ranges, sino también para áreas como la generación automática de datos de entrenamiento para IDS, la evaluación de herramientas de monitoreo de sistemas, y el desarrollo de agentes de asistencia para administración de sistemas. En todos estos contextos, la capacidad de un agente LLM para simular comportamiento técnico humano de manera autónoma y variable tiene un valor potencial considerable.
+| Tramo de la ejecución | llama3.1:8b | qwen3.5:9b |
+|-----------------------|-------------|------------|
+| Inicio (0–20%) | ~20% error | ~5–12% error |
+| Tramo medio (40–60%) | ~10% error | ~10–11% error |
+| Final (80–100%) | ~12–15% error | ~7–11% error |
+
+En términos generales, llama3.1:8b presenta mayor variación entre el inicio y el tramo medio de sus ejecuciones, mientras que qwen3.5:9b mantiene una tasa más estable, aunque más elevada que el mínimo de llama3.1:8b, durante la mayor parte de la sesión. Ambos modelos convergen hacia tasas similares en el tramo final.
+
+---
+
+## 4.3 Duración de las Ejecuciones
+
+![execution_duration_llama_3_1:8b](Trident/scripts/db_admin_experiments/execution_duration_llama_3_1:8b.png)
+
+![execution_duration_qwen35_9b](Trident/scripts/db_admin_experiments/execution_duration_qwen35_9b.png)
+
+
+### Llama3.1:8b - alta consistencia temporal
+
+Las 30 ejecuciones de llama3.1:8b presentan una duración notablemente uniforme, con valores que oscilan entre **15 y 18 minutos** y un promedio de **16,4 minutos**. La variabilidad entre ejecuciones es mínima, lo que sugiere que el modelo sigue una rutina de trabajo estable y predecible: la sesión avanza a un ritmo constante independientemente del resultado concreto de cada comando.
+
+Esta consistencia puede interpretarse tanto como una fortaleza, el comportamiento es reproducible y controlable, como una limitación, en tanto que el agente no parece adaptar su duración en función del progreso real sobre la tarea.
+
+### Qwen3.5:9b - alta variabilidad temporal
+
+En contraste, qwen3.5:9b exhibe una variabilidad extrema en la duración de sus ejecuciones, con un rango que va de **menos de 5 minutos** hasta **58 minutos**, y un promedio de **14,6 minutos**. Varias ejecuciones finalizan en menos de 10 minutos, mientras que al menos dos superan los 50 minutos.
+
+Esta dispersión indica que el modelo no sigue un patrón temporal estable. Las ejecuciones muy cortas probablemente corresponden a sesiones en las que el agente encontró un error irrecuperable en etapas tempranas o alcanzó rápidamente una conclusión sobre la tarea. Las ejecuciones muy largas, por otro lado, podrían reflejar comportamientos exploratorios prolongados, bucles de reintentos, o un uso intensivo de `curl` y `sleep` que dilata la sesión sin necesariamente producir más comandos SQL.
+
+### Comparación directa
+
+| Métrica | llama3.1:8b | qwen3.5:9b |
+|---------|-------------|------------|
+| Duración promedio | 16,4 min | 14,6 min |
+| Duración mínima | ~15 min | ~3 min |
+| Duración máxima | ~18 min | ~58 min |
+| Variabilidad | Baja | Alta |
+
+---
+## 4.4 Volumen de Comandos SQL por Subcategoría
+
+![sql-desglose](Trident/scripts/db_admin_experiments/sql-desglose.png)
+
+
+El desglose de los comandos SQL por subcategoría confirma que ambos modelos priorizan la consulta de datos sobre su modificación, aunque con intensidades marcadamente distintas. En llama3.1:8b, los comandos **SELECT** concentran el **80%** del total de operaciones SQL (380 comandos), mientras que en qwen3.5:9b esta proporción desciende al **69%** (716 comandos). Esto indica que, si bien ambos agentes adoptan una estrategia predominantemente orientada a la consulta y monitoreo de datos, qwen3.5:9b destina una porción comparativamente mayor de su actividad SQL a operaciones de escritura.
+
+Esta diferencia se confirma al observar la subcategoría **INSERT**: qwen3.5:9b ejecuta 172 comandos de inserción (17% de su actividad SQL), más del doble de la proporción registrada en llama3.1:8b (33 comandos, 7%). Qwen3.5:9b es además el único de los dos modelos que presenta un volumen visible de comandos **UPDATE** (84 comandos, 8%) y **DELETE** (61 comandos, 6%), lo que evidencia una estrategia de modificación activa de la base de datos, actualización de registros existentes y eliminación de datos, prácticamente ausente en llama3.1:8b, donde estas subcategorías no alcanzan una representación significativa.
+
+En contraste, llama3.1:8b es el único modelo que presenta un uso visible de comandos **CREATE**, **ALTER** y **DROP**, correspondientes a operaciones de definición y evolución del esquema de la base de datos. Aunque estas subcategorías representan una fracción reducida del total (el remanente del 13% no cubierto por SELECT e INSERT), su sola presencia indica que llama3.1:8b incursiona, al menos ocasionalmente, en tareas de administración estructural de la base de datos que qwen3.5:9b no llega a explorar.
+
+En síntesis, el perfil operativo de llama3.1:8b se concentra de forma más marcada en la consulta (SELECT) y muestra cierta exploración puntual sobre la estructura del esquema, mientras que qwen3.5:9b distribuye su actividad SQL de manera más equilibrada entre lectura y escritura, con una participación sustancial de operaciones INSERT, UPDATE y DELETE que lo posicionan como el modelo con mayor interacción activa sobre los datos almacenados.
+
+
+---
+
+## 4.5 Limitaciones
+
+Del análisis de los resultados y del diseño experimental se desprenden las siguientes limitaciones:
+
+**Brecha entre el conocimiento del modelo y el entorno real.** Los modelos fueron entrenados sobre documentación general de Linux y PostgreSQL, pero el entorno de Docker en el que opera el agente puede diferir de ese conocimiento generalizado. Esto explica los casos de comandos fallidos por binarios no disponibles en el entorno (exit 127): el agente intenta utilizar herramientas comunes en sistemas Linux genéricos que no están instaladas en la imagen específica utilizada.
+
+**Variabilidad entre ejecuciones.** La naturaleza estocástica de los LLM introduce variabilidad entre ejecuciones que, si bien es deseable para simular comportamiento humano, también dificulta la caracterización precisa del agente. Ejecuciones individuales pueden diferir considerablemente en la secuencia de acciones tomadas, aunque las métricas agregadas sobre las 30 ejecuciones revelan patrones estables.
+
+**Profundidad del perfil simulado.** Si bien el agente simula convincentemente varias dimensiones del comportamiento de un DBA (tipos de comandos, pausas, consultas web), otros aspectos del comportamiento humano no son capturados: patrones de horario (el agente no tiene noción de jornada laboral), interacciones con otros usuarios del sistema, o la evolución de hábitos a lo largo de días o semanas.
+
+**Tamaño de la muestra.** Si bien 30 ejecuciones por modelo permiten observar patrones consistentes, un conjunto mayor podría revelar comportamientos menos frecuentes o refinar las estimaciones de variabilidad, particularmente para el modelo Qwen3.5 9B, que exhibe una dispersión temporal considerable entre ejecuciones.
 
 ---
 
@@ -385,23 +460,23 @@ Finalmente, vale destacar que los resultados de este trabajo son relevantes no s
 
 ### 5.1 Síntesis de Resultados
 
-Este trabajo presentó el diseño, implementación y evaluación experimental de un agente benigno autónomo que simula el comportamiento de un administrador de bases de datos en un entorno Linux contenerizado. El agente, construido sobre el framework OpenCode con Qwen3-Coder como motor de razonamiento, fue evaluado a través de 100 ejecuciones independientes de 45 minutos cada una.
+Este trabajo presentó el diseño, implementación y evaluación experimental de un agente benigno autónomo que simula el comportamiento de un administrador de bases de datos en un entorno Linux contenerizado. El agente, construido sobre la herramienta OpenCode con Qwen3.5 9B y Llama3.1 8B como motores de razonamiento, fue evaluado a través de 30 ejecuciones independientes por modelo.
 
 Los principales hallazgos son:
 
-1. **Alta confiabilidad en tareas SQL:** Las operaciones de base de datos fundamentales (`SELECT`, `INSERT`, `UPDATE`, `DELETE`) se ejecutan exitosamente en el 92–100% de los casos, confirmando la competencia del modelo en su dominio principal.
+1. **Confiabilidad equivalente en SQL:** Ambos modelos presentan tasas de éxito similares en la categoría SQL (85% y 84%), lo que indica una capacidad equivalente para formular consultas válidas. La diferencia entre ambos no reside en la precisión de los comandos SQL, sino en la estrategia general de trabajo.
 
-2. **Comportamiento bifásico:** El agente presenta una fase inicial de exploración con mayor tasa de errores, seguida de una fase de estabilización donde opera por debajo del 9% de errores. Este patrón imita, de forma emergente, la curva de aprendizaje de un usuario humano.
+2. **Perfiles operativos distintos:** Llama3.1 8B adopta una estrategia considerablemente más activa (4.691 comandos vs. 1.755), centrada en la interacción directa con la base de datos (85% SQL). Qwen3.5 9B, en cambio, distribuye su actividad entre SQL (63%), consultas web (25%) y pausas (12%), reflejando un enfoque más orientado a la investigación y la modificación activa de datos.
 
-3. **Distribución realista de comandos:** El perfil de uso de comandos (predominancia de `SELECT`, presencia significativa de `curl` y `sleep`) es coherente con el rol de DBA asignado.
+3. **Dinámicas de error opuestas:** Llama3.1 8B exhibe una fase exploratoria inicial con alta tasa de error (~20%) que desciende hacia el tramo central (~5%), mientras que Qwen3.5 9b mantiene una tasa más estable pero presenta mayor variabilidad temporal entre ejecuciones.
 
-4. **Capacidad de replanificación dinámica:** Ante el fallo del servidor remoto, el agente adaptó su estrategia de manera autónoma, instalando una base de datos local y completando sus tareas en el nuevo entorno. Este comportamiento, si bien no previsto, ilustra la flexibilidad emergente de los agentes LLM.
+4. **Consistencia vs. variabilidad:** Llama3.1 8B produce ejecuciones temporalmente uniformes (15–18 min), mientras que Qwen3.5 9B oscila entre menos de 5 y hasta 58 minutos, lo que refleja dos filosofías de trabajo diferentes: rutina estable versus comportamiento exploratorio.
 
-5. **Limitaciones identificadas:** La brecha entre el conocimiento del modelo y el entorno específico de Docker, los problemas con la herramienta `webfetch`, y la ausencia de una métrica directa de completitud del objetivo son las principales áreas de mejora.
+5. **Estrategias SQL complementarias:** Llama3.1 8B se concentra en consultas SELECT (80%) y explota operaciones de definición de esquema (CREATE, ALTER, DROP), mientras que Qwen3.5 9B distribuye su actividad entre lectura (69%) y escritura (INSERT 17%, UPDATE 8%, DELETE 6%), posicionándose como el modelo con mayor interacción activa sobre los datos.
 
 ### 5.2 Contribuciones
 
-El trabajo demuestra la viabilidad de utilizar agentes LLM como generadores de tráfico benigno realista en entornos de cyber range. La metodología experimental diseñada (100 ejecuciones independientes, categorización de comandos, análisis de exit codes, análisis temporal) constituye un framework de evaluación replicable para futuros trabajos en esta área.
+El trabajo demuestra la viabilidad de utilizar agentes LLM como generadores de tráfico benigno realista en entornos de cyber range. La metodología experimental diseñada, 30 ejecuciones independientes por modelo, categorización formal de comandos, análisis de códigos de salida, evolución temporal de errores y desglose por subcategorías SQL, constituye un framework de evaluación replicable para futuros trabajos en esta área. Asimismo, la comparación entre dos modelos de arquitecturas distintas bajo condiciones idénticas aporta evidencia sobre cómo la elección del modelo subyacente impacta el perfil de comportamiento del agente, incluso cuando las métricas de confiabilidad bruta son similares.
 
 ### 5.3 Trabajo Futuro
 
@@ -409,38 +484,29 @@ Varios experimentos y mejoras quedaron fuera del alcance de este trabajo y const
 
 1. **Comparación entre múltiples modelos LLM:** Evaluar el mismo agente con distintos modelos (e.g., modelos de la familia Llama, Mistral, o modelos orientados a código como DeepSeek-Coder) permitiría determinar cuál ofrece el mejor equilibrio entre autonomía, confiabilidad y comportamiento realista para esta tarea específica.
 
-2. **Implementación de métricas de completitud de objetivos:** Diseñar un mecanismo que permita evaluar si el agente logró o no su objetivo de alto nivel, más allá de las métricas de comportamiento observado.
+2. **Simulación de múltiples perfiles de usuario:** Extender el sistema para simular perfiles distintos (desarrollador web, analista de datos, operador de red).
 
-3. **Simulación de múltiples perfiles de usuario:** Extender el sistema para simular perfiles distintos (desarrollador web, analista de datos, operador de red), evaluando si el framework generaliza bien a diferentes roles.
+3. **Experimentos de larga duración:** Extender la duración de las ejecuciones para evaluar si el agente mantiene su comportamiento coherente en sesiones de trabajo más largas (varias horas), y si emergen comportamientos adicionales en horizontes temporales mayores.
 
-4. **Análisis de la calidad del tráfico simulado:** Evaluar si el tráfico generado por el agente puede efectivamente engañar a clasificadores de tráfico (IDS/IPS), midiendo métricas como la distancia estadística entre el tráfico del agente y tráfico humano real.
-
-5. **Experimentos de larga duración:** Extender la duración de las ejecuciones para evaluar si el agente mantiene su comportamiento coherente en sesiones de trabajo más largas (varias horas), y si emergen comportamientos adicionales en horizontes temporales mayores.
-
-6. **Mejora del entorno de ejecución:** Resolver el problema de la herramienta `webfetch` y asegurar que el entorno Docker cuente con las herramientas habituales que un agente LLM espera encontrar, reduciendo así los errores por binarios ausentes.
-
-7. **Coordinación entre múltiples agentes:** Evaluar la posibilidad de ejecutar simultáneamente múltiples instancias del agente benigno junto con agentes de otros perfiles (atacante, usuario casual) para generar un entorno de cyber range con tráfico mixto más realista.
+4. **Coordinación entre múltiples agentes:** Evaluar la posibilidad de ejecutar simultáneamente múltiples instancias del agente benigno junto con agentes de otros perfiles (atacante, defensor) para generar un entorno de cyber range con tráfico mixto más realista.
 
 ---
 
 ## 6. Bibliografía
 
-[1] Yamin, M. M., Ullah, M., Ullah, H., & Katt, B. (2021). Cyber ranges: A systematic literature review. *Computers & Security, 107*, 102358. https://doi.org/10.1016/j.cose.2021.102358
+[1] Yamin, M. M., Katt, B., & Gkioulos, V. (2020). Cyber ranges and security testbeds: Scenarios, functions, tools and architecture. Computers & Security, 88, 101636. https://doi.org/10.1016/j.cose.2019.101636
 
-[2] Sommer, R., & Paxson, V. (2010). Outside the closed world: On using machine learning for network intrusion detection. En *2010 IEEE Symposium on Security and Privacy* (pp. 305–316). IEEE. https://doi.org/10.1109/SP.2010.25
+[2] Russell, S., & Norvig, P. (2010). *Artificial Intelligence: A Modern Approach* (Third Edition). Prentice Hall.
 
-[3] Wei, J., Tay, Y., Bommasani, R., Raffel, C., Zoph, B., Borgeaud, S., ... & Fedus, W. (2022). Emergent abilities of large language models. *Transactions on Machine Learning Research*. https://arxiv.org/abs/2206.07682
+[3] Wei, J., Tay, Y., Bommasani, R., Raffel, C., Zoph, B., Borgeaud, S., … & Fedus, W. (2022). Emergent abilities of large language models. *Transactions on Machine Learning Research*. https://arxiv.org/abs/2206.07682
 
-[4] Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., ... & Polosukhin, I. (2017). Attention is all you need. *Advances in Neural Information Processing Systems, 30*. https://arxiv.org/abs/1706.03762
+[4] Yao, S., Zhao, J., Yu, D., Du, N., Shafran, I., Narasimhan, K., & Cao, Y. (2022). ReAct: Synergizing reasoning and acting in language models. En *International Conference on Learning Representations (ICLR) 2023*. https://arxiv.org/abs/2210.03629
 
-[5] Ouyang, L., Wu, J., Jiang, X., Almeida, D., Wainwright, C., Mishkin, P., ... & Lowe, R. (2022). Training language models to follow instructions with human feedback. *Advances in Neural Information Processing Systems, 35*, 27730–27744. https://arxiv.org/abs/2203.02155
+[5] Meta AI. (2024). *Llama 3.1: Open Foundation Models*. https://ai.meta.com/blog/llama-3-1/
 
-[6] Russell, S., & Norvig, P. (2020). *Artificial Intelligence: A Modern Approach* (4th ed.). Pearson.
+[6] Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., & Kaiser, Ł. (2017). Attention is all you need. En *31st Conference on Neural Information Processing Systems (NIPS 2017)*.
 
-[7] Yao, S., Zhao, J., Yu, D., Du, N., Shafran, I., Narasimhan, K., & Cao, Y. (2022). ReAct: Synergizing reasoning and acting in language models. En *International Conference on Learning Representations (ICLR) 2023*. https://arxiv.org/abs/2210.03629
+[7] Ouyang, L., Wu, J., Jiang, X., Almeida, D., Wainwright, C. L., Mishkin, P., … & Lowe, R. (2022). Training language models to follow instructions with human feedback. *Advances in Neural Information Processing Systems, 35*, 27730–27744. https://arxiv.org/abs/2203.02155
 
-[8] Yang, J., Jimenez, C. E., Wettig, A., Lieret, K., Yao, S., Narasimhan, K., & Press, O. (2024). SWE-agent: Agent-computer interfaces enable automated software engineering. *Advances in Neural Information Processing Systems, 37*. https://arxiv.org/abs/2405.15793
+[8] Qwen Team. (2026). *Qwen3.5 Technical Report*. Alibaba Cloud. https://qwenlm.github.io
 
-[9] Qwen Team. (2025). *Qwen3-Coder: Technical Report*. Alibaba Cloud. https://huggingface.co/Qwen/Qwen3-Coder
-
-[10] Merkel, D. (2014). Docker: Lightweight Linux containers for consistent development and deployment. *Linux Journal, 2014*(239), 2.
